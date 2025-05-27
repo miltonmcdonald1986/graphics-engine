@@ -9,19 +9,17 @@ sudo apt-get update
 
 sudo apt-get install -y clang-19 clang-format-19 clang-tidy-19 cmake jq
 
-# Remove the build directory if it exists
 rm -rf build
 
-# clang-format
-jq -r '.[].file' build/compile_commands.json | xargs clang-format-19 -i -style="Google"
-
-# Run CMake configuration
-echo "Running CMake..."
+echo "Running cmake..."
 cmake -S . -B build -DCMAKE_C_COMPILER=clang-19 -DCMAKE_CXX_COMPILER=clang++-19
 
+echo "Running clang-format..."
+jq -r '.[].file' build/compile_commands.json | xargs clang-format-19 -i -style="Google"
+
+echo "Running clang-tidy..."
 run-clang-tidy-19 -warnings-as-errors="bugprone-*,cert-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,performance-*,readability*-" -checks="bugprone-*,cert-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,performance-*,readability*-" -p build
 
-# (Optional) Build the project
 echo "Building project..."
 cmake --build build
 
