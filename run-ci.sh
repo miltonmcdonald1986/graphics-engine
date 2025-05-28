@@ -9,6 +9,7 @@ sudo apt-get update
 
 sudo apt-get install -y clang-19 clang-format-19 clang-tidy-19 cmake jq
 
+echo "Removing build directory..."
 rm -rf build
 
 echo "Running cmake..."
