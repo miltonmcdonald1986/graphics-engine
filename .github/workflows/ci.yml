@@ -2,22 +2,20 @@ name: CI
 
 on:
   push:
+    branches:
+      - main
   pull_request:
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        
       - name: Install Dependencies
         run: sudo apt-get update && sudo apt-get install -y clang-19 clang++-19 clang-format-19 clang-tidy-19
-
       - name: Set execute permission for CI script
         run: chmod +x run-ci.sh
-
       - name: Run CI Script
         run: ./run-ci.sh
+      - uses: stefanzweifel/git-auto-commit-action@v4
         
