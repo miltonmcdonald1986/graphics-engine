@@ -21,3 +21,16 @@ jobs:
       - name: Run CI Script
         run: ./run-ci.sh
         
+      - name: Check for formatting changes
+        run: |
+          if ! git diff --quiet; then
+            echo "Detected formatting changes, committing..."
+            git config --global user.name "GitHub Actions"
+            git config --global user.email "actions@github.com"
+            git add .
+            git commit -m "Apply clang-format fixes"
+            git push
+          else
+            echo "No formatting changes detected."
+          fi
+        
