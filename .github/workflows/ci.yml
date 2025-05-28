@@ -12,5 +12,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Set execute permission for CI script
+        run: chmod +x run-ci.sh
+
       - name: Run CI Script
         run: ./run-ci.sh
+        
