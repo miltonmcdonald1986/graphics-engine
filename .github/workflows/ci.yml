@@ -12,9 +12,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         
-      - name: Get current branch
-        run: echo "BRANCH_NAME=$(git symbolic-ref --short HEAD || echo 'main')"
-        
       - name: Install Dependencies
         run: sudo apt-get update && sudo apt-get install -y clang-19 clang++-19 clang-format-19 clang-tidy-19
 
@@ -24,16 +21,5 @@ jobs:
       - name: Run CI Script
         run: ./run-ci.sh
         
-      - name: Check for formatting changes
-        run: |
-          if ! git diff --quiet; then
-            echo "Detected formatting changes, committing..."
-            git config --global user.name "GitHub Actions"
-            git config --global user.email "actions@github.com"
-            git add .
-            git commit -m "Apply clang-format fixes"
-            git push origin $BRANCH_NAME
-          else
-            echo "No formatting changes detected."
-          fi
+      - uses: stefanzweifel/git-auto-commit-action@v4
         
