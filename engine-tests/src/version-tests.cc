@@ -2,7 +2,8 @@
 
 #include "graphics-engine/version.h"
 
-TEST(SampleTest, BasicAssertions) 
-{ 
-  EXPECT_EQ(1 + 1, 2); 
+using ::graphics_engine::GetEngineLibVersion;
+
+TEST(GraphicsEngineTests, GetEngineLibVersion) { 
+  EXPECT_EQ(GetEngineLibVersion(), "1.0.0");
 }
