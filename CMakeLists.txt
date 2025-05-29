@@ -15,7 +15,17 @@ else()
   message(WARNING "GLFW submodule is missing! Run: git submodule update --init --recursive")
 endif()
 
+if(EXISTS "${CMAKE_SOURCE_DIR}/third-party/googletest/CMakeLists.txt")
+    message(STATUS "Google Test submodule found! Adding to build.")
+    add_subdirectory(third-party/googletest)
+    enable_testing()
+else()
+    message(WARNING "Google Test submodule is missing! Run: git submodule update --init --recursive")
+endif()
+
+
 add_subdirectory(engine-lib)
+add_subdirectory(engine-tests)
 add_subdirectory(demo-app)
 
 set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT demo-app)
