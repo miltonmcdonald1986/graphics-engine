@@ -13,7 +13,7 @@ jobs:
         with:
           submodules: true
       - name: Install Dependencies
-        run: sudo apt-get update && sudo apt-get install -y libwayland-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxkbcommon-dev libxrandr-dev wayland-protocols
+        run: sudo apt-get update && sudo apt-get install -y lcov libwayland-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxkbcommon-dev libxrandr-dev wayland-protocols
       - name: Set execute permission for CI script
         run: chmod +x run-ci-gcc.sh
       - name: Run CI Script
