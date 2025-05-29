@@ -15,7 +15,11 @@ echo "Running clang-format..."
 echo $filtered_files | xargs clang-format-19 -i -style="Google"
 
 echo "Running clang-tidy..."
-echo $filtered_files | xargs clang-tidy-19 -warnings-as-errors="bugprone-*,cert-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,performance-*,readability*-" -checks="bugprone-*,cert-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,performance-*,readability*-" -p build-ci
+echo $filtered_files | xargs clang-tidy-19 \
+  --warnings-as-errors="bugprone-*,cert-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,performance-*,readability*-" \
+  --checks="bugprone-*,cert-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,performance-*,readability*-" \
+  --header-filter='engine-lib/include/graphics-engine/.*|engine-lib/src/.*|demo-app/src/.*' \
+  -p build-ci
 
 echo "Building project..."
 cmake --build build-ci
