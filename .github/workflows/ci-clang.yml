@@ -1,5 +1,4 @@
 name: clang
-
 on:
   push:
     branches:
