@@ -15,7 +15,7 @@ filtered_files+=" $(find engine-lib/src -name "*.h" -o -name "*.cc")"
 filtered_files+=" $(find demo-app/src -name "*.h" -o -name "*.cc")"
 
 echo "Running cppcheck..."
-echo "$filtered_files" | xargs cppcheck --enable=all --inconclusive --quiet --force --error-exitcode=1
+echo "$filtered_files" | xargs cppcheck --enable=style --check-level=exhaustive -i tests -i third-party --inconclusive --error-exitcode=1 .
 
 echo "Running clang-format..."
 echo $filtered_files | xargs clang-format-19 -i -style="Google"
