@@ -14,6 +14,6 @@ endif()
 
 if(ENABLE_COVERAGE_GCC)
     message(STATUS "Coverage enabled for GCC!")
-    target_compile_options(engine-lib PRIVATE -fprofile-arcs -ftest-coverage -O0 -g)
+    target_compile_options(engine-lib PRIVATE -fprofile-arcs -ftest-coverage -g)
     target_link_options(engine-lib PRIVATE -fprofile-arcs -ftest-coverage)
 endif()
