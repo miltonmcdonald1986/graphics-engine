@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+option(ENABLE_COVERAGE "Enable code coverage analysis" OFF)
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/third-party/glfw/CMakeLists.txt")

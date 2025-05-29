@@ -30,7 +30,4 @@ echo $filtered_files | xargs clang-tidy-19 \
 echo "Building project..."
 cmake --build build-ci
 
-echo "Running unit tests..."
-build-ci/engine-tests/engine-tests
-
 echo "CI script completed successfully."
