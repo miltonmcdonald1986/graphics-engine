@@ -14,7 +14,7 @@ jobs:
         with:
           submodules: true
       - name: Install Dependencies
-        run: sudo apt-get update && sudo apt-get install -y clang-19 clang++-19 clang-format-19 clang-tidy-19 libwayland-dev libxkbcommon-dev wayland-protocols
+        run: sudo apt-get update && sudo apt-get install -y clang-19 clang++-19 clang-format-19 clang-tidy-19 libwayland-dev libx11-dev libxkbcommon-dev wayland-protocols
       - name: Set execute permission for CI script
         run: chmod +x run-ci.sh
       - name: Run CI Script
