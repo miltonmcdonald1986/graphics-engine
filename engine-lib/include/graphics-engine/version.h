@@ -9,6 +9,6 @@ namespace graphics_engine {
 
 DLLEXPORT [[nodiscard]] auto GetEngineLibVersion() -> std::string_view;
 
-}  // graphics_engine
+}  // namespace graphics_engine
 
 #endif  // ENGINE_LIB_VERSION_H_
