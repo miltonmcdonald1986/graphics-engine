@@ -1,0 +1,20 @@
+name: gcc
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  run-ci-gcc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set execute permission for CI script
+        run: chmod +x run-ci-gcc.sh
+
+      - name: Run CI Script
+        run: ./run-ci-gcc.sh
