@@ -28,6 +28,6 @@ echo $filtered_files | xargs clang-tidy-19 \
   -p build-ci-clang
 
 echo "Building project..."
-cmake --build build-ci-clang
+cmake --build build-ci-clang --config Release
 
 echo "CI script completed successfully."

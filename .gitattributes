@@ -1,1 +1,2 @@
-run-ci.sh text eol=lf
+run-ci-clang.sh text eol=lf
+run-ci-gcc.sh text eol=lf
