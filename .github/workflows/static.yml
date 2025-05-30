@@ -2,9 +2,8 @@
 name: GitHub Pages
 on:
   workflow_run:
-    workflows: ["run-ci-gcc", "run-ci-clang"]
+    workflows: ["gcc"]
     types: [completed]
-  workflow_dispatch:
 permissions:
   contents: read
   pages: write
