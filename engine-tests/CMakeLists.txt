@@ -14,6 +14,6 @@ set_target_properties(engine-tests PROPERTIES
 
 if(ENABLE_COVERAGE_GCC)
     message(STATUS "Coverage enabled for gcc!")
-    target_compile_options(engine-tests PRIVATE -fprofile-arcs -ftest-coverage -O0 -g)
+    target_compile_options(engine-tests PRIVATE -fprofile-arcs -ftest-coverage -g)
     target_link_options(engine-tests PRIVATE -fprofile-arcs -ftest-coverage)
 endif()

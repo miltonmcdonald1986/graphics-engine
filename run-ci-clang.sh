@@ -6,7 +6,7 @@ set -e
 echo "Removing build directory..."
 rm -rf build-ci-clang
 
-echo "Running cmake..."
+echo "Running cmake...."
 cmake -S . -B build-ci-clang -DCMAKE_C_COMPILER=clang-19 -DCMAKE_CXX_COMPILER=clang++-19
 
 # filtered_files=$(jq -r '[.[] | select(.file | test("third-party/") | not)] | .[].file' build-ci-clang/compile_commands.json)
