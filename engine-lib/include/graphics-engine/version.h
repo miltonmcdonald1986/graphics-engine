@@ -21,6 +21,6 @@ namespace graphics_engine::version {
  */
 DLLEXPORT [[nodiscard]] auto GetEngineLibVersion() -> std::string_view;
 
-}  // namespace graphics_engine
+}  // namespace graphics_engine::version
 
 #endif  // ENGINE_LIB_VERSION_H_
