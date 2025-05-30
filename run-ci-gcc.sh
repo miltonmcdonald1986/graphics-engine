@@ -10,7 +10,7 @@ echo "Running CMake with GCC..."
 cmake -S . -B build-ci-gcc -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DENABLE_COVERAGE_GCC=ON
 
 echo "Building project..."
-cmake --build build-ci-gcc
+cmake --build build-ci-gcc --config Release
 
 echo "Running tests..."
 ctest --test-dir build-ci-gcc/engine-tests --output-on-failure
