@@ -4,8 +4,7 @@
 
 #include "graphics-engine/version.h"
 
-namespace 
-{
+namespace {
 
 constexpr int kEngineLibVersionMajor = 1;
 constexpr int kEngineLibVersionMinor = 0;
@@ -13,7 +12,7 @@ constexpr int kEngineLinVersionPatch = 0;
 
 constexpr std::string_view kEngineLibVersionString = "1.0.0";
 
-}
+}  // namespace
 
 namespace graphics_engine::version {
 
@@ -21,4 +20,4 @@ namespace graphics_engine::version {
   return kEngineLibVersionString;
 }
 
-}  // namespace graphics_engine
+}  // namespace graphics_engine::version
