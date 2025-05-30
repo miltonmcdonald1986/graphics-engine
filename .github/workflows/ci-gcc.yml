@@ -15,12 +15,17 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y lcov libwayland-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxkbcommon-dev libxrandr-dev python3 python3-pip wayland-protocols
+          sudo apt-get install -y doxygen lcov libwayland-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxkbcommon-dev libxrandr-dev python3 python3-pip wayland-protocols
           pip3 install junit2html
       - name: Set execute permission for CI script
         run: chmod +x run-ci-gcc.sh
       - name: Run CI Script
         run: ./run-ci-gcc.sh
+      - name: Upload API Docs
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs
+          path: docs/
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
         with:

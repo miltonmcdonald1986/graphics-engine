@@ -3,6 +3,9 @@
 # Exit immediately if a command fails
 set -e
 
+echo "Run doxygen..."
+doxygen ./Doxyfile
+
 echo "Removing build directory..."
 rm -rf build-ci-gcc
 
