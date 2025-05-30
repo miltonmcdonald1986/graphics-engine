@@ -7,7 +7,7 @@ echo "Removing build directory..."
 rm -rf build-ci-clang
 
 echo "Running cmake...."
-cmake -S . -B build-ci-clang -DCMAKE_C_COMPILER=clang-19 -DCMAKE_CXX_COMPILER=clang++-19 --config Release
+cmake -S . -B build-ci-clang -DCMAKE_C_COMPILER=clang-19 -DCMAKE_CXX_COMPILER=clang++-19
 
 # filtered_files=$(jq -r '[.[] | select(.file | test("third-party/") | not)] | .[].file' build-ci-clang/compile_commands.json)
 filtered_files=$(find engine-lib/include/graphics-engine -name "*.h") 
@@ -28,6 +28,6 @@ echo $filtered_files | xargs clang-tidy-19 \
   -p build-ci-clang
 
 echo "Building project..."
-cmake --build build-ci-clang
+cmake --build build-ci-clang --config Release
 
 echo "CI script completed successfully."
