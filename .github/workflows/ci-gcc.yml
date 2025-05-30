@@ -21,6 +21,11 @@ jobs:
         run: chmod +x run-ci-gcc.sh
       - name: Run CI Script
         run: ./run-ci-gcc.sh
+      - name: Upload API Docs
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs
+          path: docs/
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
         with:
