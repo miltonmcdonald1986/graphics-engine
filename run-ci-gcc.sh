@@ -13,7 +13,9 @@ echo "Building project..."
 cmake --build build-ci-gcc --config Release
 
 echo "Running tests..."
-ctest --test-dir build-ci-gcc/engine-tests --output-on-failure
+
+build-ci-gcc/engine-tests/engine-tests --gtest_output=xml:build-ci-gcc/test_output.xml
+junit2html build-ci-gcc/test_output.xml build-ci-gcc/test_report.html
 
 echo "Generating coverage data..."
 lcov --capture --directory build-ci-gcc/engine-lib --output-file build-ci-gcc/coverage.info
