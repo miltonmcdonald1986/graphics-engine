@@ -21,3 +21,13 @@ jobs:
         run: chmod +x run-ci-gcc.sh
       - name: Run CI Script
         run: ./run-ci-gcc.sh
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: build-ci-gcc/coverage-html/
+      - name: Upload Unit Test Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-report
+          path: build-ci-gcc/test_report.html
