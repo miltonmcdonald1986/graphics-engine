@@ -33,7 +33,7 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ github.token }}
           name: unit-test-report
-          path: site/unit-test/
+          path: site/unit-tests/
       - name: Copy Index.html to Site
         run: cp index.html site/
       - name: Setup Pages
