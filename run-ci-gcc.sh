@@ -17,8 +17,8 @@ ctest --test-dir build-ci-gcc/engine-tests --output-on-failure
 
 echo "Generating coverage data..."
 lcov --capture --directory build-ci-gcc --output-file build-ci-gcc/coverage.info
+echo "Removing unwanted data..."
 lcov --remove build-ci-gcc/coverage.info "*/engine-tests/src/*" "*/third-party/googletest/*" "/usr/*" --output-file build-ci-gcc/coverage.info
-
 echo "Generating HTML coverage report..."
 genhtml build-ci-gcc/coverage.info --output-directory build-ci-gcc/coverage-html
 
