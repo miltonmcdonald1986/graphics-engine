@@ -20,13 +20,29 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Download Coverage Report
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+          name: coverage-report
+          path: site/coverage/
+      - name: Download Unit Test Report
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+          name: unit-test-report
+          path: site/unit-test/
+      - name: Copy Index.html to Site
+        run: cp index.html site/
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
-          path: '.'
+          path: site/
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
