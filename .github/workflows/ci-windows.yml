@@ -5,11 +5,13 @@ on:
       - main
   pull_request:
 jobs:
-  run-ci-clang:
+  run-ci-windows:
     runs-on: windows-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Set up CMake
         uses: jwlawson/actions-setup-cmake@v1
       - name: Run Windows CI script
