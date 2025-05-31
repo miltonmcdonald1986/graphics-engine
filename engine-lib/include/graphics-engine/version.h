@@ -5,7 +5,7 @@
 #ifndef ENGINE_LIB_VERSION_H_
 #define ENGINE_LIB_VERSION_H_
 
-#include <string_view>
+#include <string>
 
 #include "dll-export.h"
 
@@ -19,7 +19,7 @@ namespace graphics_engine::version {
  *
  * @return A `std::string_view` containing the engine library version.
  */
-DLLEXPORT [[nodiscard]] auto GetEngineLibVersion() -> std::string_view;
+DLLEXPORT [[nodiscard]] auto GetEngineLibVersion() -> std::string;
 
 }  // namespace graphics_engine::version
 
