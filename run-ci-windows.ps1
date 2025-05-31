@@ -5,7 +5,7 @@ Write-Output "Removing build directory..."
 Remove-Item -Recurse -Force build-ci-windows -ErrorAction SilentlyContinue
 
 Write-Output "Running CMake..."
-cmake -S . -B build-ci-windows
+cmake -S . -B build-ci-windows -DCMAKE_BUILD_TYPE=Release
 
 Write-Output "Building project..."
 cmake --build build-ci-windows --config Release
