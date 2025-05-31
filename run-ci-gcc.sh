@@ -10,7 +10,7 @@ echo "Removing build directory..."
 rm -rf build-ci-gcc
 
 echo "Running CMake with GCC..."
-cmake -S . -B build-ci-gcc -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DENABLE_COVERAGE_GCC=ON
+cmake -S . -B build-ci-gcc -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DENABLE_COVERAGE_GCC=ON -DCMAKE_BUILD_TYPE=Release
 
 echo "Building project..."
 cmake --build build-ci-gcc --config Release

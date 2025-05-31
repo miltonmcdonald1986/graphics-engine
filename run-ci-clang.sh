@@ -7,7 +7,7 @@ echo "Removing build directory..."
 rm -rf build-ci-clang
 
 echo "Running cmake...."
-cmake -S . -B build-ci-clang -DCMAKE_C_COMPILER=clang-19 -DCMAKE_CXX_COMPILER=clang++-19
+cmake -S . -B build-ci-clang -DCMAKE_C_COMPILER=clang-19 -DCMAKE_CXX_COMPILER=clang++-19 -DCMAKE_BUILD_TYPE=Release
 
 filtered_files=$(find engine-lib demo-app -type f \( -name "*.cc" -o -name "*.h" \))
 echo "The list of files to feed to cppcheck, clang-format-19 and clang-tidy-19: "
