@@ -22,6 +22,7 @@ junit2html build-ci-gcc/test_output.xml build-ci-gcc/test_report.html
 
 echo "Generating coverage data..."
 lcov --capture --directory build-ci-gcc/engine-lib --output-file build-ci-gcc/coverage.info
+lcov --remove build-ci-gcc/coverage.info '/usr/include/c++/*' --output-file build-ci-gcc/coverage.info
 
 echo "Generating HTML coverage report..."
 genhtml build-ci-gcc/coverage.info --output-directory build-ci-gcc/coverage-html
