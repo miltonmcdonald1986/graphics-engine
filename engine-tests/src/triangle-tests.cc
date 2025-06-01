@@ -8,7 +8,7 @@
 
 using ::graphics_engine::triangle::IsValidTriangle;
 
-TEST(GraphicsEngineTests, IsValidTriangle) {
+TEST(TriangleTests, IsValidTriangle) {
   ASSERT_TRUE(IsValidTriangle(3.F, 4.F, 5.F));
   ASSERT_FALSE(IsValidTriangle(-3.F, 4.F, 5.F));
   ASSERT_FALSE(IsValidTriangle(3.F, -4.F, 5.F));
