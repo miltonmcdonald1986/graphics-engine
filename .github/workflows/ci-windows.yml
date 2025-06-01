@@ -16,4 +16,4 @@ jobs:
         uses: jwlawson/actions-setup-cmake@v1
       - name: Run Windows CI script
         shell: pwsh
-        run: .\run-ci-windows.ps1
+        run: .\ci\run-ci-windows.ps1
