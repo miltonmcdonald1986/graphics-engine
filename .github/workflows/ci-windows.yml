@@ -14,6 +14,8 @@ jobs:
           submodules: true
       - name: Set up CMake
         uses: jwlawson/actions-setup-cmake@v1
+      - name: Install Doxygen
+        uses: ssciwr/doxygen-install@v1
       - name: Run Windows CI script
         shell: pwsh
         run: .\ci\run-ci-windows.ps1

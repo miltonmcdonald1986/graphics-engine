@@ -4,6 +4,9 @@ file(GLOB_RECURSE ENGINE_PUBLIC_HEADERS include/graphics-engine/*.h)
 file(GLOB_RECURSE ENGINE_SOURCES src/*.cc src/*.h)
 add_library(engine-lib ${LIB_TYPE} ${ENGINE_PUBLIC_HEADERS} ${ENGINE_SOURCES})
 
+target_link_libraries(engine-lib PRIVATE glad)
+target_include_directories(engine-lib PRIVATE ${CMAKE_SOURCE_DIR}/third-patry/glad/include)
+
 source_group("Interface Files" FILES ${ENGINE_PUBLIC_HEADERS})
 source_group("Source Files" FILES ${ENGINE_SOURCES})
 
