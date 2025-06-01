@@ -8,6 +8,6 @@
 
 using ::graphics_engine::version::GetEngineLibVersion;
 
-TEST(GraphicsEngineTests, GetEngineLibVersion) { 
+TEST(VersionTests, GetEngineLibVersion) { 
   ASSERT_EQ(GetEngineLibVersion(), "1.0.0");
 }

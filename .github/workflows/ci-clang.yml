@@ -15,8 +15,8 @@ jobs:
       - name: Install Dependencies
         run: sudo apt-get update && sudo apt-get install -y clang-19 clang++-19 clang-format-19 clang-tidy-19 cppcheck libwayland-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxkbcommon-dev libxrandr-dev wayland-protocols
       - name: Set execute permission for CI script
-        run: chmod +x run-ci-clang.sh
+        run: chmod +x ci/run-ci-clang.sh
       - name: Run CI Script
-        run: ./run-ci-clang.sh
+        run: ./ci/run-ci-clang.sh
       - uses: stefanzweifel/git-auto-commit-action@v4
         

@@ -17,3 +17,17 @@ if(ENABLE_COVERAGE_GCC)
     target_compile_options(engine-tests PRIVATE -fprofile-arcs -ftest-coverage -g)
     target_link_options(engine-tests PRIVATE -fprofile-arcs -ftest-coverage)
 endif()
+
+if(WIN32)
+    add_custom_command(
+        TARGET engine-tests
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_BINARY_DIR}/engine-lib/$<CONFIG>
+            ${CMAKE_BINARY_DIR}/engine-tests/$<CONFIG>
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_BINARY_DIR}/bin/$<CONFIG>
+            ${CMAKE_BINARY_DIR}/engine-tests/$<CONFIG>
+
+    )
+endif()
