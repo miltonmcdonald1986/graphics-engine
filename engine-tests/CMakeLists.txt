@@ -26,7 +26,7 @@ if(WIN32)
             ${CMAKE_BINARY_DIR}/engine-lib/$<CONFIG>
             ${CMAKE_BINARY_DIR}/engine-tests/$<CONFIG>
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_BINARY_DIR}/bin/Debug
+            ${CMAKE_BINARY_DIR}/bin/$<CONFIG>
             ${CMAKE_BINARY_DIR}/engine-tests/$<CONFIG>
 
     )
