@@ -1,3 +1,5 @@
+project(demo-app)
+
 file(GLOB_RECURSE SRC_FILES "src/*.h" "src/*.cc")
 add_executable(demo-app ${SRC_FILES})
 

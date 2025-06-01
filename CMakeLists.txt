@@ -24,12 +24,14 @@ else()
     message(WARNING "Google Test submodule is missing! Run: git submodule update --init --recursive")
 endif()
 
-
 add_subdirectory(engine-lib)
 add_subdirectory(engine-tests)
 add_subdirectory(demo-app)
+add_subdirectory(third-party/glad)
 
 set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT demo-app)
+set_target_properties(docs PROPERTIES FOLDER "third-party-libs")
+set_target_properties(glad PROPERTIES FOLDER "third-party-libs")
 set_target_properties(glfw PROPERTIES FOLDER "third-party-libs")
 set_target_properties(gmock PROPERTIES FOLDER "third-party-libs")
 set_target_properties(gmock_main PROPERTIES FOLDER "third-party-libs")

@@ -1,3 +1,5 @@
+project(engine-tests)
+
 set(ENV{PATH} "${CMAKE_BINARY_DIR}/bin/$<CONFIG>;$ENV{PATH}")
 message("Current PATH: $ENV{PATH}")
 
