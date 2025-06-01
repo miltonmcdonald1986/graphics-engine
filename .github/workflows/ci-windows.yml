@@ -15,7 +15,7 @@ jobs:
       - name: Set up CMake
         uses: jwlawson/actions-setup-cmake@v1
       - name: Install Doxygen
-        run: choco install doxygen -y
+        uses: ssciwr/doxygen-install@v1
       - name: Run Windows CI script
         shell: pwsh
         run: .\ci\run-ci-windows.ps1
