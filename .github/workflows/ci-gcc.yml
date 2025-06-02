@@ -15,7 +15,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y doxygen lcov libwayland-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxkbcommon-dev libxrandr-dev python3 python3-pip wayland-protocols
+          sudo apt-get install -y doxygen lcov libgl-dev libwayland-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxkbcommon-dev libxrandr-dev python3 python3-pip wayland-protocols
           pip3 install junit2html
       - name: Set execute permission for CI script
         run: chmod +x ci/run-ci-gcc.sh
