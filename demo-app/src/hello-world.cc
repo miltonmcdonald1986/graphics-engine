@@ -6,7 +6,6 @@
 #include <iostream>
 
 #include "GLFW/glfw3.h"
-
 #include "graphics-engine/engine.h"
 #include "graphics-engine/version.h"
 
@@ -29,33 +28,35 @@ auto main() -> int {
   assert(window != nullptr);
 
   glfwMakeContextCurrent(window);
-  int error = glfwGetError(nullptr);
-  assert(error == GLFW_NO_ERROR);
+  assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
 
   std::cout << "engine-lib:\n";
   std::cout << "  version: " << GetEngineLibVersion() << '\n';
 
   Expected<void> result = InitializeEngine();
-  assert(result.has_value());
+  if (!result.has_value()) {
+    assert(false);
+
+    glfwTerminate();
+    assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
+
+    return -1;
+  }
 
   while (!glfwWindowShouldClose(window)) {
-    error = glfwGetError(nullptr);
-    assert(error == GLFW_NO_ERROR);
+    assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
 
     // ClearColorBuffer();
 
     glfwSwapBuffers(window);
-    error = glfwGetError(nullptr);
-    assert(error == GLFW_NO_ERROR);
+    assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
 
     glfwPollEvents();
-    error = glfwGetError(nullptr);
-    assert(error == GLFW_NO_ERROR);
+    assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
   }
 
   glfwTerminate();
-  error = glfwGetError(nullptr);
-  assert(error == GLFW_NO_ERROR);
+  assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
 
   return 0;
 }
