@@ -14,13 +14,22 @@ class GLFWTestFixture : public ::testing::Test {
     ASSERT_EQ(glfwInit(), GLFW_TRUE);
 
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+    int error = glfwGetError(nullptr);
+    ASSERT_EQ(error, GLFW_NO_ERROR);
+
     window_ = glfwCreateWindow(640, 480, "", nullptr, nullptr);
     ASSERT_NE(window_, nullptr);
 
     glfwMakeContextCurrent(window_);
+    error = glfwGetError(nullptr);
+    ASSERT_EQ(error, GLFW_NO_ERROR);
   }
 
-  static void TearDownTestSuite() { glfwTerminate(); }
+  static void TearDownTestSuite() { 
+    glfwTerminate();
+    int error = glfwGetError(nullptr);
+    ASSERT_EQ(error, GLFW_NO_ERROR);
+  }
 
  private:
   static GLFWwindow* window_;
