@@ -11,8 +11,8 @@
 namespace graphics_engine::error {
 
 enum class ErrorCode : std::uint8_t {
-  kNoError = 0,
-  kEngineInitializationFailed,
+  // kNoError = 0,
+  kEngineInitializationFailed = 1,
   kCount  // Sentinel value to track enum size
 };
 

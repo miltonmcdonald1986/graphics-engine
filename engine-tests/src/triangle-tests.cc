@@ -2,7 +2,7 @@
 // This source code is licensed under the MIT License. See LICENSE file in the
 // project root for details.
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
 #include "graphics-engine/triangle.h"
 
