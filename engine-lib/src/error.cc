@@ -19,12 +19,9 @@ class ErrorCategory : public std::error_category {
                   "Update the switch statement below!");
 
     switch (static_cast<ErrorCode>(ev)) {
-      case ErrorCode::kNoError:
-        return "No error.";
+      default:
       case ErrorCode::kEngineInitializationFailed:
         return "Engine Initialization failed.";
-      default:
-        return "Unknown graphics engine error.";
     }
   }
 };
