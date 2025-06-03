@@ -1,17 +1,31 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
 project(graphics-engine VERSION 0.0.0)
+
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(ENABLE_COVERAGE_GCC "Enable code coverage analysis for gcc" OFF)
+
+if (MSVC)
+    if (NOT BUILD_SHARED_LIBS)
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+    else()
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+    endif()
+endif()
+
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-option(ENABLE_COVERAGE_GCC "Enable code coverage analysis for gcc" OFF)
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
-
 if(EXISTS "${CMAKE_SOURCE_DIR}/third-party/glm/CMakeLists.txt")
   message(STATUS "glm submodule found! Adding to build.")
   add_subdirectory(third-party/glm)
+  
+  # This is a hack to workaround a bug in GLM
+  set_target_properties(glm PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
 else()
   message(WARNING "glm submodule is missing! Run: git submodule update --init --recursive")
 endif()
@@ -19,6 +33,7 @@ endif()
 if(EXISTS "${CMAKE_SOURCE_DIR}/third-party/glfw/CMakeLists.txt")
   message(STATUS "glfw submodule found! Adding to build.")
   add_subdirectory(third-party/glfw)
+  # set_target_properties(glfw PROPERTIES USE_MSVC_RUNTIME_LIBRARY_DLL OFF)
 else()
   message(WARNING "glfw submodule is missing! Run: git submodule update --init --recursive")
 endif()

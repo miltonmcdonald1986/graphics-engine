@@ -4,7 +4,14 @@ file(GLOB_RECURSE ENGINE_PUBLIC_HEADERS include/graphics-engine/*.h)
 file(GLOB_RECURSE ENGINE_SOURCES src/*.cc src/*.h)
 add_library(engine-lib ${LIB_TYPE} ${ENGINE_PUBLIC_HEADERS} ${ENGINE_SOURCES})
 
-target_link_libraries(engine-lib PRIVATE glad)
+if(BUILD_SHARED_LIBS)
+    set(LIB_TYPE SHARED)
+	target_compile_definitions(engine-lib PRIVATE BUILD_SHARED_LIBS)
+else()
+    set(LIB_TYPE STATIC)
+endif()
+
+target_link_libraries(engine-lib PRIVATE glad glm)
 target_include_directories(engine-lib PRIVATE ${CMAKE_SOURCE_DIR}/third-patry/glad/include)
 
 source_group("Interface Files" FILES ${ENGINE_PUBLIC_HEADERS})
@@ -21,9 +28,7 @@ target_compile_options(engine-lib PRIVATE
 
 target_include_directories(engine-lib PUBLIC include PRIVATE src)
 
-set(LIB_TYPE_STATIC)
 if (BUILD_SHARED_LIBS)
-  set(LIB_TYPE_SHARED)
   target_compile_definitions(engine-lib PRIVATE ENGINE_LIB_EXPORTS)
 endif()
 

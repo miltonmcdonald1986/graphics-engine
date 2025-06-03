@@ -19,10 +19,13 @@ set_target_properties(demo-app PROPERTIES
   VS_DEBUGGER_ENVIRONMENT "PATH=${CMAKE_BINARY_DIR}/engine-lib/$<CONFIG>;%PATH%"
 )
 
-if(WIN32)
+if(WIN32 AND BUILD_SHARED_LIBS)
     add_custom_command(
         TARGET demo-app
         POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_BINARY_DIR}/engine-lib/$<CONFIG>
+            ${CMAKE_BINARY_DIR}/demo-app/$<CONFIG>
 		COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_BINARY_DIR}/third-party/glfw/src/$<CONFIG>/glfw3.dll
             ${CMAKE_BINARY_DIR}/demo-app/$<CONFIG>
