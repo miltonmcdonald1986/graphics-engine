@@ -75,6 +75,14 @@ TEST(EngineTests, AreIdenticalFailsWithNonexistentFile) {
             "Stb Error: Failed to load file.");
 }
 
+TEST(EngineTests, AreIdenticalWorksWithDifferentSizedFiles) {
+  Expected<bool> expectedComparison =
+      AreIdentical(path("screenshots/hello-window.png"),
+                   path("screenshots/hello-window-resized.png"));
+  ASSERT_TRUE(expectedComparison.has_value());
+  ASSERT_FALSE(expectedComparison.value());
+}
+
 TEST(EngineTests, InitializeEngineNoContext) {
   auto result = InitializeEngine();
   ASSERT_FALSE(result.has_value());
@@ -106,6 +114,10 @@ TEST_F(GLFWTestFixture, SetBackgroundColor) {
   ASSERT_TRUE(expectedComparison.has_value());
   ASSERT_TRUE(expectedComparison.value());
 }
+
+//TEST_F(GLFWTestFixture, Sandbox) {
+// Uncomment and start coding in here to just play around!
+//}
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
