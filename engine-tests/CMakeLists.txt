@@ -34,3 +34,22 @@ if(WIN32 AND BUILD_SHARED_LIBS)
             ${CMAKE_BINARY_DIR}/engine-tests/$<CONFIG>
     )
 endif()
+
+# Copy the screenshots dir to the exe dir.
+if(CMAKE_CONFIGURATION_TYPES) # Multi-generator (e.g., Visual Studio)
+    add_custom_command(
+        TARGET engine-tests
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_CURRENT_SOURCE_DIR}/screenshots
+            ${CMAKE_BINARY_DIR}/engine-tests/$<CONFIG>/screenshots
+    )
+else() # Single-generator (e.g., Makefiles, Ninja)
+    add_custom_command(
+        TARGET engine-tests
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_CURRENT_SOURCE_DIR}/screenshots
+            ${CMAKE_BINARY_DIR}/engine-tests/screenshots
+    )
+endif()

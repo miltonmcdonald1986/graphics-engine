@@ -6,7 +6,20 @@
 #include "graphics-engine/engine.h"
 #include "gtest/gtest.h"
 
+using ::glm::vec4;
+
+using ::graphics_engine::engine::AreIdentical;
+using ::graphics_engine::engine::CaptureScreenshot;
 using ::graphics_engine::engine::InitializeEngine;
+using ::graphics_engine::engine::Render;
+using ::graphics_engine::engine::SetBackgroundColor;
+using ::graphics_engine::types::Expected;
+
+using ::std::filesystem::path;
+using ::std::filesystem::temp_directory_path;
+
+#include <iostream>
+#include <vector>
 
 class GLFWTestFixture : public ::testing::Test {
  public:
@@ -25,7 +38,7 @@ class GLFWTestFixture : public ::testing::Test {
     ASSERT_EQ(error, GLFW_NO_ERROR);
   }
 
-  static void TearDownTestSuite() { 
+  static void TearDownTestSuite() {
     glfwTerminate();
     int error = glfwGetError(nullptr);
     ASSERT_EQ(error, GLFW_NO_ERROR);
@@ -36,6 +49,31 @@ class GLFWTestFixture : public ::testing::Test {
 };
 
 GLFWwindow* GLFWTestFixture::window_ = nullptr;
+
+TEST(EngineTests, AreIdenticalWorksWithIdenticalFiles) {
+  Expected<bool> expectedComparison =
+      AreIdentical(path("screenshots/hello-window.png"),
+                   path("screenshots/hello-window-copy.png"));
+  ASSERT_TRUE(expectedComparison.has_value());
+  ASSERT_TRUE(expectedComparison.value());
+}
+
+TEST(EngineTests, AreIdenticalWorksWithDifferentFiles) {
+  Expected<bool> expectedComparison =
+      AreIdentical(path("screenshots/hello-window.png"),
+                   path("screenshots/hello-window-modified.png"));
+  ASSERT_TRUE(expectedComparison.has_value());
+  ASSERT_FALSE(expectedComparison.value());
+}
+
+TEST(EngineTests, AreIdenticalFailsWithNonexistentFile) {
+  Expected<bool> expectedComparison =
+      AreIdentical(path("screenshots/hello-window.png"),
+                   path("screenshots/file-that-does-not-exist.png"));
+  ASSERT_FALSE(expectedComparison.has_value());
+  ASSERT_EQ(expectedComparison.error().message(),
+            "Stb Error: Failed to load file.");
+}
 
 TEST(EngineTests, InitializeEngineNoContext) {
   auto result = InitializeEngine();
@@ -48,6 +86,25 @@ TEST(EngineTests, InitializeEngineNoContext) {
 TEST_F(GLFWTestFixture, InitializeEngineWithContext) {
   auto result = InitializeEngine();
   ASSERT_TRUE(result.has_value());
+}
+
+TEST_F(GLFWTestFixture, SetBackgroundColor) {
+  auto result = InitializeEngine();
+  ASSERT_TRUE(result.has_value());
+
+  SetBackgroundColor(vec4{0.2F, 0.3F, 0.3F, 1.0F});
+  Expected<path> expectedPath =
+      Render().and_then([]() { return CaptureScreenshot(); });
+  ASSERT_TRUE(expectedPath.has_value());
+
+  const path& pngPath = expectedPath.value();
+  ASSERT_EQ(pngPath.string(),
+            (temp_directory_path() / "screenshot.png").string());
+
+  Expected<bool> expectedComparison =
+      AreIdentical(path("screenshots/hello-window.png"), pngPath);
+  ASSERT_TRUE(expectedComparison.has_value());
+  ASSERT_TRUE(expectedComparison.value());
 }
 
 int main(int argc, char** argv) {

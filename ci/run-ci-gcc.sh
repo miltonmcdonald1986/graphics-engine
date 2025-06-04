@@ -17,7 +17,10 @@ cmake --build build-ci-gcc --config Release
 
 echo "Running tests..."
 
-build-ci-gcc/engine-tests/engine-tests --gtest_output=xml:build-ci-gcc/test_output.xml
+cwd=$(pwd)
+cd build-ci-gcc/engine-tests
+./engine-tests --gtest_output=xml:"$cwd/build-ci-gcc/test_output.xml"
+cd "$cwd"
 junit2html build-ci-gcc/test_output.xml build-ci-gcc/test_report.html
 
 echo "Generating coverage data..."
