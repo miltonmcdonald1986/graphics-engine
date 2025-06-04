@@ -11,8 +11,8 @@ else()
     set(LIB_TYPE STATIC)
 endif()
 
-target_link_libraries(engine-lib PRIVATE glad glm)
-target_include_directories(engine-lib PRIVATE ${CMAKE_SOURCE_DIR}/third-patry/glad/include)
+target_link_libraries(engine-lib PRIVATE glad glm stb)
+target_include_directories(engine-lib PRIVATE ${CMAKE_SOURCE_DIR}/third-patry/glad/include ${CMAKE_SOURCE_DIR}/third-patry/stb/include PUBLIC ${CMAKE_SOURCE_DIR}/third-party/glm)
 
 source_group("Interface Files" FILES ${ENGINE_PUBLIC_HEADERS})
 source_group("Source Files" FILES ${ENGINE_SOURCES})

@@ -9,7 +9,12 @@
 #include "graphics-engine/engine.h"
 #include "graphics-engine/version.h"
 
+using ::glm::vec4;
+
+using ::graphics_engine::engine::CaptureScreenshot;
 using ::graphics_engine::engine::InitializeEngine;
+using ::graphics_engine::engine::Render;
+using ::graphics_engine::engine::SetBackgroundColor;
 using ::graphics_engine::types::Expected;
 using ::graphics_engine::version::GetEngineLibVersion;
 
@@ -48,10 +53,11 @@ auto main() -> int {
     return -1;
   }
 
+  const vec4 defaultBackgroundColor{0.2F, 0.3F, 0.3F, 1.0F};
+  SetBackgroundColor(defaultBackgroundColor);
+
   while (glfwWindowShouldClose(window) == GLFW_FALSE) {
     assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
-
-    // ClearColorBuffer();
 
     glfwSwapBuffers(window);
     assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
