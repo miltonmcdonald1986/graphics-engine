@@ -7,7 +7,6 @@ file(GLOB TEST_SOURCES "src/*.cc")
 
 add_executable(engine-tests ${TEST_SOURCES})
 add_test(NAME EngineTests COMMAND engine-tests)
-target_include_directories(engine-tests PRIVATE third-party/googletest/googletest/include)
 target_link_libraries(engine-tests PRIVATE engine-lib glfw gtest gtest_main)
 
 set_target_properties(engine-tests PROPERTIES
@@ -20,7 +19,7 @@ if(ENABLE_COVERAGE_GCC)
     target_link_options(engine-tests PRIVATE -fprofile-arcs -ftest-coverage)
 endif()
 
-if(WIN32)
+if(WIN32 AND BUILD_SHARED_LIBS)
     add_custom_command(
         TARGET engine-tests
         POST_BUILD
