@@ -23,7 +23,7 @@ class ErrorCategory : public std::error_category {
 
     switch (static_cast<ErrorCode>(condition)) {
       default:
-      case ErrorCode::kEngineInitializationFailed:
+      case kEngineInitializationFailed:
         return "Engine Initialization failed.";
       case kGLErrorInvalidEnum:
         return "OpenGL Error: Invalid Enum.";
@@ -44,8 +44,8 @@ auto GetErrorCategory() -> const ErrorCategory& {
   return instance;
 }
 
-auto MakeErrorCode(graphics_engine::error::ErrorCode e) -> std::error_code {
-  return {std::to_underlying(e), graphics_engine::error::GetErrorCategory()};
+auto MakeErrorCode(ErrorCode code) -> std::error_code {
+  return {std::to_underlying(code), GetErrorCategory()};
 }
 
 }  // namespace graphics_engine::error

@@ -21,7 +21,7 @@ enum class ErrorCode : std::uint8_t {
   kCount  // Sentinel value to track enum size
 };
 
-auto MakeErrorCode(graphics_engine::error::ErrorCode e) -> std::error_code;
+auto MakeErrorCode(ErrorCode code) -> std::error_code;
 
 }  // namespace graphics_engine::error
 
