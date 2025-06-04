@@ -6,6 +6,8 @@
 
 #include <utility>
 
+using enum ::graphics_engine::error::ErrorCode;
+
 namespace graphics_engine::error {
 
 class ErrorCategory : public std::error_category {
@@ -14,13 +16,13 @@ class ErrorCategory : public std::error_category {
     return "graphics_engine::error";
   }
 
-  [[nodiscard]] auto message(int ev) const -> std::string override {
-    static_assert(std::to_underlying(ErrorCode::kCount) == 2,
+  [[nodiscard]] auto message(int condition) const -> std::string override {
+    static_assert(std::to_underlying(kCount) == 2,
                   "Update the switch statement below!");
 
-    switch (static_cast<ErrorCode>(ev)) {
+    switch (static_cast<ErrorCode>(condition)) {
       default:
-      case ErrorCode::kEngineInitializationFailed:
+      case kEngineInitializationFailed:
         return "Engine Initialization failed.";
     }
   }
@@ -31,8 +33,8 @@ auto GetErrorCategory() -> const ErrorCategory& {
   return instance;
 }
 
-auto make_error_code(graphics_engine::error::ErrorCode e) -> std::error_code {
-  return {std::to_underlying(e), graphics_engine::error::GetErrorCategory()};
+auto MakeErrorCode(ErrorCode code) -> std::error_code {
+  return {std::to_underlying(code), GetErrorCategory()};
 }
 
 }  // namespace graphics_engine::error

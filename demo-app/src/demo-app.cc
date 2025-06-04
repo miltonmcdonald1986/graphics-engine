@@ -48,7 +48,7 @@ auto main() -> int {
     return -1;
   }
 
-  while (!glfwWindowShouldClose(window)) {
+  while (glfwWindowShouldClose(window) == GLFW_FALSE) {
     assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
 
     // ClearColorBuffer();
