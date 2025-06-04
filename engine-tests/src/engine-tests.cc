@@ -20,6 +20,7 @@ using ::graphics_engine::engine::SetBackgroundColor;
 using ::graphics_engine::types::Expected;
 
 using ::std::ifstream;
+using ::std::ofstream;
 using ::std::filesystem::path;
 using ::std::filesystem::temp_directory_path;
 
@@ -56,36 +57,36 @@ class GLFWTestFixture : public Test {
 GLFWwindow* GLFWTestFixture::window_ = nullptr;
 
 TEST(EngineTests, AreIdenticalWorksWithIdenticalFiles) {
-  Expected<bool> expectedComparison =
+  Expected<bool> expected_comparison =
       AreIdentical(path("screenshots/hello-window.png"),
                    path("screenshots/hello-window-copy.png"));
-  ASSERT_TRUE(expectedComparison.has_value());
-  ASSERT_TRUE(expectedComparison.value());
+  ASSERT_TRUE(expected_comparison.has_value());
+  ASSERT_TRUE(expected_comparison.value());
 }
 
 TEST(EngineTests, AreIdenticalWorksWithDifferentFiles) {
-  Expected<bool> expectedComparison =
+  Expected<bool> expected_comparison =
       AreIdentical(path("screenshots/hello-window.png"),
                    path("screenshots/hello-window-modified.png"));
-  ASSERT_TRUE(expectedComparison.has_value());
-  ASSERT_FALSE(expectedComparison.value());
+  ASSERT_TRUE(expected_comparison.has_value());
+  ASSERT_FALSE(expected_comparison.value());
 }
 
 TEST(EngineTests, AreIdenticalFailsWithNonexistentFile) {
-  Expected<bool> expectedComparison =
+  Expected<bool> expected_comparison =
       AreIdentical(path("screenshots/hello-window.png"),
                    path("screenshots/file-that-does-not-exist.png"));
-  ASSERT_FALSE(expectedComparison.has_value());
-  ASSERT_EQ(expectedComparison.error().message(),
+  ASSERT_FALSE(expected_comparison.has_value());
+  ASSERT_EQ(expected_comparison.error().message(),
             "Stb Error: Failed to load file.");
 }
 
 TEST(EngineTests, AreIdenticalWorksWithDifferentSizedFiles) {
-  Expected<bool> expectedComparison =
+  Expected<bool> expected_comparison =
       AreIdentical(path("screenshots/hello-window.png"),
                    path("screenshots/hello-window-resized.png"));
-  ASSERT_TRUE(expectedComparison.has_value());
-  ASSERT_FALSE(expectedComparison.value());
+  ASSERT_TRUE(expected_comparison.has_value());
+  ASSERT_FALSE(expected_comparison.value());
 }
 
 TEST(EngineTests, InitializeEngineNoContext) {
@@ -100,16 +101,22 @@ TEST_F(GLFWTestFixture, CaptureScreenshotFailsIfItCantWriteTheFile) {
   auto result = InitializeEngine();
   ASSERT_TRUE(result.has_value());
 
-  // Open a file in read only mode so Capturing the screenshot fails
-  ifstream file(temp_directory_path() /
-                "screenshot.png");  // Open in read-only mode
-  ASSERT_TRUE(file);
+  const path file{temp_directory_path() / "screenshot.png"};
+  
+  // Create a file.
+  ofstream f_out(file);
+  f_out << "Hello world";
+  f_out.close();
 
-  Expected<path> expectedPath{CaptureScreenshot()};
-  ASSERT_FALSE(expectedPath.has_value());
-  ASSERT_STREQ(expectedPath.error().category().name(),
+  // Open it again in read only mode so Capturing the screenshot fails
+  ifstream f_in(file);  // Open in read-only mode
+  ASSERT_TRUE(f_in);
+
+  Expected<path> expected_path{CaptureScreenshot()};
+  ASSERT_FALSE(expected_path.has_value());
+  ASSERT_STREQ(expected_path.error().category().name(),
                "graphics_engine::error");
-  ASSERT_EQ(expectedPath.error().message(),
+  ASSERT_EQ(expected_path.error().message(),
             "Stb Error: Failed to write png file.");
 }
 
@@ -123,18 +130,18 @@ TEST_F(GLFWTestFixture, SetBackgroundColor) {
   ASSERT_TRUE(result.has_value());
 
   SetBackgroundColor(vec4{0.2F, 0.3F, 0.3F, 1.0F});
-  Expected<path> expectedPath =
+  Expected<path> expected_path =
       Render().and_then([]() { return CaptureScreenshot(); });
-  ASSERT_TRUE(expectedPath.has_value());
+  ASSERT_TRUE(expected_path.has_value());
 
-  const path& pngPath = expectedPath.value();
+  const path& pngPath = expected_path.value();
   ASSERT_EQ(pngPath.string(),
             (temp_directory_path() / "screenshot.png").string());
 
-  Expected<bool> expectedComparison =
+  Expected<bool> expected_comparison =
       AreIdentical(path("screenshots/hello-window.png"), pngPath);
-  ASSERT_TRUE(expectedComparison.has_value());
-  ASSERT_TRUE(expectedComparison.value());
+  ASSERT_TRUE(expected_comparison.has_value());
+  ASSERT_TRUE(expected_comparison.value());
 }
 
 // TEST_F(GLFWTestFixture, Sandbox) {
