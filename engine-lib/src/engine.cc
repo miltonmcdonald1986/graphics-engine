@@ -7,15 +7,15 @@
 #include "error.h"
 #include "glad/glad.h"
 
-using ::graphics_engine::error::ErrorCode;
+using enum ::graphics_engine::error::ErrorCode;
 using ::graphics_engine::types::Expected;
 
 namespace graphics_engine::engine {
 
-DLLEXPORT [[nodiscard]] auto InitializeEngine() -> Expected<void> {
-  if (gladLoadGL() == 0)
-    return std::unexpected(
-        make_error_code(ErrorCode::kEngineInitializationFailed));
+auto InitializeEngine() -> Expected<void> {
+  if (gladLoadGL() == 0) {
+    return std::unexpected(MakeErrorCode(kEngineInitializationFailed));
+  }
 
   return {};
 }
