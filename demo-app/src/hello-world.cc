@@ -14,6 +14,12 @@ using ::graphics_engine::types::Expected;
 using ::graphics_engine::version::GetEngineLibVersion;
 
 auto main() -> int {
+
+#ifdef _WIN32
+  // Enable Memory Leak Detection
+  _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+  
   int res_init = glfwInit();
   if (res_init == GLFW_FALSE) {
     assert(false);
