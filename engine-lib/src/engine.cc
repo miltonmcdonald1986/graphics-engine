@@ -57,13 +57,7 @@ auto AreIdentical(const path& png0, const path& png1) -> Expected<bool> {
 auto CaptureScreenshot() -> Expected<std::filesystem::path> {
   std::array<GLint, 4> viewport{};  // x, y, width, height
   glGetIntegerv(GL_VIEWPORT, viewport.data());
-  GLenum error = glGetError();
-  if (error == GL_INVALID_ENUM) {
-    return std::unexpected(MakeErrorCode(kGLErrorInvalidEnum));
-  }
-  if (error == GL_INVALID_VALUE) {
-    return std::unexpected(MakeErrorCode(kGLErrorInvalidValue));
-  }
+  assert(glGetError() == GL_NO_ERROR);
 
   static_assert(std::is_same_v<GLsizei, GLint>,
                 "GLsizei and GLint are not the same type!");
@@ -73,16 +67,7 @@ auto CaptureScreenshot() -> Expected<std::filesystem::path> {
                 static_cast<size_t>(4);
   std::vector<std::byte> pixels(size);
   glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
-  error = glGetError();
-  if (error == GL_INVALID_ENUM) {
-    return std::unexpected(MakeErrorCode(kGLErrorInvalidEnum));
-  }
-  if (error == GL_INVALID_OPERATION) {
-    return std::unexpected(MakeErrorCode(kGLErrorInvalidOperation));
-  }
-  if (error == GL_INVALID_VALUE) {
-    return std::unexpected(MakeErrorCode(kGLErrorInvalidValue));
-  }
+  assert(glGetError() == GL_NO_ERROR);
 
   const std::filesystem::path tempDir{std::filesystem::temp_directory_path()};
   std::filesystem::path pngPath{tempDir / "screenshot.png"};
