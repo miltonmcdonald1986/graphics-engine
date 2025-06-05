@@ -40,7 +40,7 @@ auto AreIdentical(const path& png0, const path& png1) -> Expected<bool> {
 
   const std::string strFilename0 = png0.string();
   const char* filename0 = strFilename0.c_str();
-  
+
   const std::string strFilename1 = png1.string();
   const char* filename1 = strFilename1.c_str();
 
