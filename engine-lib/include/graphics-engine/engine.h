@@ -6,6 +6,7 @@
 #define ENGINE_LIB_ENGINE_H_
 
 #include <filesystem>
+#include <optional>
 
 #include "dll-export.h"
 #include "glm/vec4.hpp"
