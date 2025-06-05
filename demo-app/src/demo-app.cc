@@ -7,14 +7,15 @@
 
 #include "GLFW/glfw3.h"
 #include "graphics-engine/engine.h"
+#include "graphics-engine/image.h"
 #include "graphics-engine/version.h"
 
 using ::glm::vec4;
 
-using ::graphics_engine::engine::CaptureScreenshot;
 using ::graphics_engine::engine::InitializeEngine;
 using ::graphics_engine::engine::Render;
 using ::graphics_engine::engine::SetBackgroundColor;
+using ::graphics_engine::image::CaptureScreenshot;
 using ::graphics_engine::types::Expected;
 using ::graphics_engine::version::GetEngineLibVersion;
 
