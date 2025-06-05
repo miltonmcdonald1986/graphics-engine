@@ -38,11 +38,11 @@ auto AreIdentical(const path& png0, const path& png1) -> Expected<bool> {
   int height2{};
   int channels2{};
 
-  const std::string strFilename0 = png0.string();
-  const char* filename0 = strFilename0.c_str();
+  const std::string str_filename0 = png0.string();
+  const char* filename0 = str_filename0.c_str();
   
-  const std::string strFilename1 = png1.string();
-  const char* filename1 = strFilename1.c_str();
+  const std::string str_filename1 = png1.string();
+  const char* filename1 = str_filename1.c_str();
 
   stbi_uc* img1 = stbi_load(filename0, &width1, &height1, &channels1, 0);
   stbi_uc* img2 = stbi_load(filename1, &width2, &height2, &channels2, 0);
@@ -55,10 +55,10 @@ auto AreIdentical(const path& png0, const path& png1) -> Expected<bool> {
     return false;
   }
 
-  auto szWidth1 = static_cast<size_t>(width1);
-  auto szHeight1 = static_cast<size_t>(height1);
-  auto szChannels1 = static_cast<size_t>(channels1);
-  size_t size = szWidth1 * szHeight1 * szChannels1;
+  auto sz_width1 = static_cast<size_t>(width1);
+  auto sz_height1 = static_cast<size_t>(height1);
+  auto sz_channels1 = static_cast<size_t>(channels1);
+  size_t size = sz_width1 * sz_height1 * sz_channels1;
   span<const stbi_uc> span1(img1, size);
   span<const stbi_uc> span2(img2, size);
   bool identical = equal(span1.begin(), span1.end(), span2.begin());
@@ -70,7 +70,7 @@ auto AreIdentical(const path& png0, const path& png1) -> Expected<bool> {
 }
 
 auto CaptureScreenshot(const optional<path>& dest) -> Expected<void> {
-  const path pngPath = dest.value_or(temp_directory_path() / "screenshot.png");
+  const path png_path = dest.value_or(temp_directory_path() / "screenshot.png");
 
   array<GLint, 4> viewport{};
   glGetIntegerv(GL_VIEWPORT, viewport.data());
@@ -80,14 +80,17 @@ auto CaptureScreenshot(const optional<path>& dest) -> Expected<void> {
                 "GLsizei and GLint are not the same type!");
   const GLsizei width = viewport[2];
   const GLsizei height = viewport[3];
-  size_t size = static_cast<size_t>(width) * static_cast<size_t>(height) *
-                static_cast<size_t>(4);
+
+  auto sz_width = static_cast<size_t>(width);
+  auto sz_height = static_cast<size_t>(height);
+  size_t num_channels{4};
+  size_t size = sz_width * sz_height * num_channels;
   vector<byte> pixels(size);
   glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
   assert(glGetError() == GL_NO_ERROR);
 
-  const std::string strFilename = pngPath.string();
-  const char* filename = strFilename.c_str();
+  const std::string str_filename = png_path.string();
+  const char* filename = str_filename.c_str();
   void* data = pixels.data();
   if (stbi_write_png(filename, width, height, 4, data, width * 4) == 0) {
     return unexpected(MakeErrorCode(kStbErrorWritePng));
