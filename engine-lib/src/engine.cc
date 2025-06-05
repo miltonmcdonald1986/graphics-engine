@@ -55,9 +55,9 @@ auto AreIdentical(const path& png0, const path& png1) -> Expected<bool> {
     return false;
   }
 
-  size_t szWidth1 = static_cast<size_t>(width1);
-  size_t szHeight1 = static_cast<size_t>(height1);
-  size_t szChannels1 = static_cast<size_t>(channels1);
+  auto szWidth1 = static_cast<size_t>(width1);
+  auto szHeight1 = static_cast<size_t>(height1);
+  auto szChannels1 = static_cast<size_t>(channels1);
   size_t size = szWidth1 * szHeight1 * szChannels1;
   span<const stbi_uc> span1(img1, size);
   span<const stbi_uc> span2(img2, size);
