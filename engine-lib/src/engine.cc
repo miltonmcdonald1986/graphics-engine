@@ -17,7 +17,16 @@ using ::glm::vec4;
 using enum ::graphics_engine::error::ErrorCode;
 using ::graphics_engine::types::Expected;
 
+using ::std::array;
+using ::std::byte;
+using ::std::equal;
+using ::std::is_same_v;
+using ::std::optional;
+using ::std::span;
+using ::std::unexpected;
+using ::std::vector;
 using ::std::filesystem::path;
+using ::std::filesystem::temp_directory_path;
 
 namespace graphics_engine::engine {
 
@@ -29,24 +38,30 @@ auto AreIdentical(const path& png0, const path& png1) -> Expected<bool> {
   int height2{};
   int channels2{};
 
-  stbi_uc* img1 =
-      stbi_load(png0.string().c_str(), &width1, &height1, &channels1, 0);
-  stbi_uc* img2 =
-      stbi_load(png1.string().c_str(), &width2, &height2, &channels2, 0);
+  const std::string strFilename0 = png0.string();
+  const char* filename0 = strFilename0.c_str();
+  
+  const std::string strFilename1 = png1.string();
+  const char* filename1 = strFilename1.c_str();
+
+  stbi_uc* img1 = stbi_load(filename0, &width1, &height1, &channels1, 0);
+  stbi_uc* img2 = stbi_load(filename1, &width2, &height2, &channels2, 0);
 
   if ((img1 == nullptr) || (img2 == nullptr)) {
-    return std::unexpected(MakeErrorCode(kStbErrorLoad));
+    return unexpected(MakeErrorCode(kStbErrorLoad));
   }
 
   if (width1 != width2 || height1 != height2 || channels1 != channels2) {
     return false;
   }
 
-  size_t size = static_cast<size_t>(width1) * static_cast<size_t>(height1) *
-                static_cast<size_t>(channels1);
-  std::span<const stbi_uc> span1(img1, size);
-  std::span<const stbi_uc> span2(img2, size);
-  bool identical = std::equal(span1.begin(), span1.end(), span2.begin());
+  size_t szWidth1 = static_cast<size_t>(width1);
+  size_t szHeight1 = static_cast<size_t>(height1);
+  size_t szChannels1 = static_cast<size_t>(channels1);
+  size_t size = szWidth1 * szHeight1 * szChannels1;
+  span<const stbi_uc> span1(img1, size);
+  span<const stbi_uc> span2(img2, size);
+  bool identical = equal(span1.begin(), span1.end(), span2.begin());
 
   stbi_image_free(img1);
   stbi_image_free(img2);
@@ -54,34 +69,36 @@ auto AreIdentical(const path& png0, const path& png1) -> Expected<bool> {
   return identical;
 }
 
-auto CaptureScreenshot() -> Expected<std::filesystem::path> {
-  std::array<GLint, 4> viewport{};  // x, y, width, height
+auto CaptureScreenshot(const optional<path>& dest) -> Expected<void> {
+  const path pngPath = dest.value_or(temp_directory_path() / "screenshot.png");
+
+  array<GLint, 4> viewport{};
   glGetIntegerv(GL_VIEWPORT, viewport.data());
   assert(glGetError() == GL_NO_ERROR);
 
-  static_assert(std::is_same_v<GLsizei, GLint>,
+  static_assert(is_same_v<GLsizei, GLint>,
                 "GLsizei and GLint are not the same type!");
   const GLsizei width = viewport[2];
   const GLsizei height = viewport[3];
   size_t size = static_cast<size_t>(width) * static_cast<size_t>(height) *
                 static_cast<size_t>(4);
-  std::vector<std::byte> pixels(size);
+  vector<byte> pixels(size);
   glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
   assert(glGetError() == GL_NO_ERROR);
 
-  const std::filesystem::path tempDir{std::filesystem::temp_directory_path()};
-  std::filesystem::path pngPath{tempDir / "screenshot.png"};
-  if (stbi_write_png(pngPath.string().c_str(), width, height, 4, pixels.data(),
-                     width * 4) == 0) {
-    return std::unexpected(MakeErrorCode(kStbErrorWritePng));
+  const std::string strFilename = pngPath.string();
+  const char* filename = strFilename.c_str();
+  void* data = pixels.data();
+  if (stbi_write_png(filename, width, height, 4, data, width * 4) == 0) {
+    return unexpected(MakeErrorCode(kStbErrorWritePng));
   }
 
-  return pngPath;
+  return {};
 }
 
 auto InitializeEngine() -> Expected<void> {
   if (gladLoadGL() == 0) {
-    return std::unexpected(MakeErrorCode(kEngineInitializationFailed));
+    return unexpected(MakeErrorCode(kEngineInitializationFailed));
   }
 
   return {};
@@ -89,11 +106,7 @@ auto InitializeEngine() -> Expected<void> {
 
 auto Render() -> Expected<void> {
   glClear(GL_COLOR_BUFFER_BIT);
-  auto error = glGetError();
-  if (error == GL_INVALID_VALUE) {
-    return std::unexpected(MakeErrorCode(kGLErrorInvalidValue));
-  }
-
+  assert(glGetError() == GL_NO_ERROR);
   return {};
 }
 

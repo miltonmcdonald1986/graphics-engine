@@ -21,6 +21,7 @@ using ::graphics_engine::types::Expected;
 
 using ::std::ifstream;
 using ::std::ofstream;
+using ::std::filesystem::exists;
 using ::std::filesystem::path;
 using ::std::filesystem::permissions;
 using enum ::std::filesystem::perms;
@@ -129,7 +130,7 @@ TEST_F(GLFWTestFixture, CaptureScreenshotFailsIfItCantWriteTheFile) {
   f_out.close();
   permissions(file, owner_read|group_read|others_read);
 
-  Expected<path> expected_path{CaptureScreenshot()};
+  Expected<void> expected_path{CaptureScreenshot()};
   ASSERT_FALSE(expected_path.has_value());
   ASSERT_STREQ(expected_path.error().category().name(),
                "graphics_engine::error");
@@ -147,16 +148,15 @@ TEST_F(GLFWTestFixture, SetBackgroundColor) {
   ASSERT_TRUE(result.has_value());
 
   SetBackgroundColor(vec4{0.2F, 0.3F, 0.3F, 1.0F});
-  Expected<path> expected_path =
+  Expected<void> expected_result =
       Render().and_then([]() { return CaptureScreenshot(); });
-  ASSERT_TRUE(expected_path.has_value());
+  ASSERT_TRUE(expected_result.has_value());
 
-  const path& pngPath = expected_path.value();
-  ASSERT_EQ(pngPath.string(),
-            (temp_directory_path() / "screenshot.png").string());
+  const path& pngPath = temp_directory_path() / "screenshot.png";
+  ASSERT_TRUE(exists(pngPath));
 
-  Expected<bool> expected_comparison =
-      AreIdentical(path("screenshots/hello-window.png"), pngPath);
+  path test_screenshot{"screenshots/hello-window.png"};
+  Expected<bool> expected_comparison = AreIdentical(test_screenshot, pngPath);
   ASSERT_TRUE(expected_comparison.has_value());
   ASSERT_TRUE(expected_comparison.value());
 }
