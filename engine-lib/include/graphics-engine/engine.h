@@ -11,6 +11,11 @@
 
 namespace graphics_engine::engine {
 
+/// @brief Clear the color, depth, and stencil buffers.
+/// @return void on success, error on failure.
+DLLEXPORT [[nodiscard]] auto ClearBuffers()
+    -> ::graphics_engine::types::Expected<void>;
+
 /// @brief Initialize the graphics engine.
 /// @return void on success, error on failure.
 DLLEXPORT [[nodiscard]] auto InitializeEngine()

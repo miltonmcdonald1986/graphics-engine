@@ -13,6 +13,7 @@ target_compile_options(demo-app PRIVATE
 )
 
 target_link_libraries(demo-app PRIVATE engine-lib glfw)
+add_dependencies(demo-app engine-lib)
 target_include_directories(demo-app PRIVATE ${CMAKE_SOURCE_DIR}/engine-lib/include)
 
 set_target_properties(demo-app PROPERTIES
@@ -23,9 +24,6 @@ if(WIN32 AND BUILD_SHARED_LIBS)
     add_custom_command(
         TARGET demo-app
         POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_BINARY_DIR}/engine-lib/$<CONFIG>
-            ${CMAKE_BINARY_DIR}/demo-app/$<CONFIG>
 		COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_BINARY_DIR}/third-party/glfw/src/$<CONFIG>/glfw3.dll
             ${CMAKE_BINARY_DIR}/demo-app/$<CONFIG>

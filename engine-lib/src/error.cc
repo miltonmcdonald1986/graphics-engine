@@ -17,7 +17,7 @@ class ErrorCategory : public std::error_category {
   }
 
   [[nodiscard]] auto message(int condition) const -> std::string override {
-    constexpr int expectedCount = 7;
+    constexpr int expectedCount = 8;
     static_assert(std::to_underlying(kCount) == expectedCount,
                   "Update the switch statement below!");
 
@@ -35,6 +35,8 @@ class ErrorCategory : public std::error_category {
         return "Stb Error: Failed to load file.";
       case kStbErrorWritePng:
         return "Stb Error: Failed to write png file.";
+      case kUnknownError:
+        return "An unknown error occurred.";
     }
   }
 };

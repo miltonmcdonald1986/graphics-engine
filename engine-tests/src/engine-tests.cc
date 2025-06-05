@@ -11,6 +11,7 @@
 #include "gtest/gtest.h"
 
 #include "graphics-engine/engine.h"
+#include "graphics-engine/hello-triangle.h"
 #include "graphics-engine/image.h"
 
 using ::glm::vec4;
@@ -18,6 +19,7 @@ using ::glm::vec4;
 using ::graphics_engine::engine::InitializeEngine;
 using ::graphics_engine::engine::Render;
 using ::graphics_engine::engine::SetBackgroundColor;
+using ::graphics_engine::hello_triangle::HelloTriangle;
 using ::graphics_engine::image::AreIdentical;
 using ::graphics_engine::image::CaptureScreenshot;
 using ::graphics_engine::types::Expected;
@@ -164,9 +166,18 @@ TEST_F(GLFWTestFixture, SetBackgroundColor) {
   ASSERT_TRUE(expected_comparison.value());
 }
 
-// TEST_F(GLFWTestFixture, Sandbox) {
-//  Uncomment and start coding in here to just play around!
-// }
+ TEST_F(GLFWTestFixture, Sandbox) {
+  auto result = InitializeEngine();
+  ASSERT_TRUE(result.has_value());
+
+  SetBackgroundColor(vec4{0.2F, 0.3F, 0.3F, 1.0F});
+
+  HelloTriangle scene;
+  Expected<void> draw_result = scene.Initialize()
+      .and_then([&scene]() { return scene.Render(); })
+      .and_then([]() { return CaptureScreenshot(); });
+  ASSERT_TRUE(draw_result.has_value());
+ }
 
 int main(int argc, char** argv) {
   InitGoogleTest(&argc, argv);

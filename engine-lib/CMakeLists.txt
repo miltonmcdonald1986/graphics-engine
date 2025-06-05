@@ -37,3 +37,13 @@ if(ENABLE_COVERAGE_GCC)
     target_compile_options(engine-lib PRIVATE -fprofile-arcs -ftest-coverage -g)
     target_link_options(engine-lib PRIVATE -fprofile-arcs -ftest-coverage)
 endif()
+
+if(WIN32 AND BUILD_SHARED_LIBS)
+    add_custom_command(
+        TARGET engine-lib
+        POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_BINARY_DIR}/engine-lib/$<CONFIG>
+            ${CMAKE_BINARY_DIR}/demo-app/$<CONFIG>
+    )
+endif()

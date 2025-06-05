@@ -7,14 +7,17 @@
 
 #include "GLFW/glfw3.h"
 #include "graphics-engine/engine.h"
+#include "graphics-engine/hello-triangle.h"
 #include "graphics-engine/image.h"
 #include "graphics-engine/version.h"
 
 using ::glm::vec4;
 
+using ::graphics_engine::engine::ClearBuffers;
 using ::graphics_engine::engine::InitializeEngine;
 using ::graphics_engine::engine::Render;
 using ::graphics_engine::engine::SetBackgroundColor;
+using ::graphics_engine::hello_triangle::HelloTriangle;
 using ::graphics_engine::image::CaptureScreenshot;
 using ::graphics_engine::types::Expected;
 using ::graphics_engine::version::GetEngineLibVersion;
@@ -53,12 +56,29 @@ auto main() -> int {
 
     return -1;
   }
+  
+  HelloTriangle scene;
+  auto expected_result = scene.Initialize();
+  assert(expected_result.has_value());
 
   const vec4 defaultBackgroundColor{0.2F, 0.3F, 0.3F, 1.0F};
   SetBackgroundColor(defaultBackgroundColor);
 
   while (glfwWindowShouldClose(window) == GLFW_FALSE) {
     assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
+
+    ClearBuffers()
+        .and_then([&scene]() { return scene.Render(); })
+        .transform_error([](const std::error_code& err) 
+          {
+          std::cerr << err.message() << '\n';
+          return err;
+          });
+    
+    Expected<void> render_result = scene.Render();
+    if (!render_result.has_value()) {
+      break;
+    }
 
     glfwSwapBuffers(window);
     assert(glfwGetError(nullptr) == GLFW_NO_ERROR);

@@ -16,6 +16,18 @@ using ::std::unexpected;
 
 namespace graphics_engine::engine {
 
+auto ClearBuffers() -> Expected<void> {
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  switch (glGetError()) {
+    case GL_INVALID_VALUE:
+      return unexpected(MakeErrorCode(kGLErrorInvalidValue));
+    case GL_NO_ERROR:
+      return {};
+    default:
+      return unexpected(MakeErrorCode(kUnknownError));
+  }
+}
+
 auto InitializeEngine() -> Expected<void> {
   if (gladLoadGL() == 0) {
     return unexpected(MakeErrorCode(kEngineInitializationFailed));

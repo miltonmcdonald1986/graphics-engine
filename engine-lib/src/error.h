@@ -18,6 +18,7 @@ enum class ErrorCode : std::uint8_t {
   kGLErrorInvalidValue,
   kStbErrorLoad,
   kStbErrorWritePng,
+  kUnknownError,
   kCount  // Sentinel value to track enum size
 };
 
