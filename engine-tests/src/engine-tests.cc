@@ -22,10 +22,16 @@ using ::graphics_engine::types::Expected;
 using ::std::ifstream;
 using ::std::ofstream;
 using ::std::filesystem::path;
+using ::std::filesystem::permissions;
+using enum ::std::filesystem::perms;
+using ::std::filesystem::remove;
 using ::std::filesystem::temp_directory_path;
 
+using ::testing::EmptyTestEventListener;
 using ::testing::InitGoogleTest;
 using ::testing::Test;
+using ::testing::TestInfo;
+using ::testing::UnitTest;
 
 class GLFWTestFixture : public Test {
  public:
@@ -98,19 +104,30 @@ TEST(EngineTests, InitializeEngineNoContext) {
 }
 
 TEST_F(GLFWTestFixture, CaptureScreenshotFailsIfItCantWriteTheFile) {
+  
+  // Create a listener to clean up the file after the test.
+  class CleanUp : public EmptyTestEventListener {
+   public:
+    CleanUp(const path& path) : path_(path) {}
+    void OnTestEnd(const TestInfo&) override {
+      remove(path_);
+    }
+
+   private:
+    path path_{};
+  };
+
+  const path file{temp_directory_path() / "screenshot.png"};
+  UnitTest::GetInstance()->listeners().Append(new CleanUp(file));
+  
   auto result = InitializeEngine();
   ASSERT_TRUE(result.has_value());
 
-  const path file{temp_directory_path() / "screenshot.png"};
-  
   // Create a file.
   ofstream f_out(file);
   f_out << "Hello world";
   f_out.close();
-
-  // Open it again in read only mode so Capturing the screenshot fails
-  ifstream f_in(file);  // Open in read-only mode
-  ASSERT_TRUE(f_in);
+  permissions(file, owner_read|group_read|others_read);
 
   Expected<path> expected_path{CaptureScreenshot()};
   ASSERT_FALSE(expected_path.has_value());
