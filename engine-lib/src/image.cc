@@ -14,7 +14,8 @@
 #include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
 
-using enum ::graphics_engine::error::ErrorCode;
+using ::graphics_engine::error::MakeErrorCode;
+using enum ::graphics_engine::types::ErrorCode;
 using ::graphics_engine::types::Expected;
 
 using ::std::array;
@@ -22,6 +23,7 @@ using ::std::byte;
 using ::std::is_same_v;
 using ::std::optional;
 using ::std::span;
+using ::std::string;
 using ::std::unexpected;
 using ::std::vector;
 using ::std::filesystem::path;
@@ -37,10 +39,10 @@ auto AreIdentical(const path& png0, const path& png1) -> Expected<bool> {
   int height2{};
   int channels2{};
 
-  const std::string str_filename0 = png0.string();
+  const string str_filename0 = png0.string();
   const char* filename0 = str_filename0.c_str();
 
-  const std::string str_filename1 = png1.string();
+  const string str_filename1 = png1.string();
   const char* filename1 = str_filename1.c_str();
 
   stbi_uc* img1 = stbi_load(filename0, &width1, &height1, &channels1, 0);
@@ -70,7 +72,6 @@ auto AreIdentical(const path& png0, const path& png1) -> Expected<bool> {
 
 auto CaptureScreenshot(const optional<path>& dest) -> Expected<void> {
   const path png_path = dest.value_or(temp_directory_path() / "screenshot.png");
-
   array<GLint, 4> viewport{};
   glGetIntegerv(GL_VIEWPORT, viewport.data());
   assert(glGetError() == GL_NO_ERROR);
@@ -88,7 +89,9 @@ auto CaptureScreenshot(const optional<path>& dest) -> Expected<void> {
   glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
   assert(glGetError() == GL_NO_ERROR);
 
-  const std::string str_filename = png_path.string();
+  stbi_flip_vertically_on_write(static_cast<int>(true));
+
+  const string str_filename = png_path.string();
   const char* filename = str_filename.c_str();
   void* data = pixels.data();
   if (stbi_write_png(filename, width, height, 4, data, width * 4) == 0) {

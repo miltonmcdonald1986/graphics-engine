@@ -6,19 +6,25 @@
 
 #include <utility>
 
-using enum ::graphics_engine::error::ErrorCode;
+using ::graphics_engine::types::ErrorCode;
+using enum ::graphics_engine::types::ErrorCode;
+
+using std::error_category;
+using std::error_code;
+using std::to_underlying;
+using std::string;
 
 namespace graphics_engine::error {
 
-class ErrorCategory : public std::error_category {
+class ErrorCategory : public error_category {
  public:
   [[nodiscard]] auto name() const noexcept -> const char* override {
     return "graphics_engine::error";
   }
 
-  [[nodiscard]] auto message(int condition) const -> std::string override {
-    constexpr int expectedCount = 8;
-    static_assert(std::to_underlying(kCount) == expectedCount,
+  [[nodiscard]] auto message(int condition) const -> string override {
+    constexpr int expectedCount = 11;
+    static_assert(to_underlying(kNumErrorCodes) == expectedCount,
                   "Update the switch statement below!");
 
     switch (static_cast<ErrorCode>(condition)) {
@@ -31,6 +37,12 @@ class ErrorCategory : public std::error_category {
         return "OpenGL Error: Invalid Operation.";
       case kGLErrorInvalidValue:
         return "OpenGL Error: Invalid Value.";
+      case kInvalidShaderType:
+        return "An invalid shader type was provided.";
+      case kSceneInitFailure:
+        return "Failed to initialize scene.";
+      case kShaderCompilationFailure:
+        return "Shader compilation failed.";
       case kStbErrorLoad:
         return "Stb Error: Failed to load file.";
       case kStbErrorWritePng:
@@ -46,8 +58,8 @@ auto GetErrorCategory() -> const ErrorCategory& {
   return instance;
 }
 
-auto MakeErrorCode(ErrorCode code) -> std::error_code {
-  return {std::to_underlying(code), GetErrorCategory()};
+auto MakeErrorCode(ErrorCode code) -> error_code {
+  return {to_underlying(code), GetErrorCategory()};
 }
 
 }  // namespace graphics_engine::error

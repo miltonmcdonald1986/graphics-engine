@@ -10,6 +10,21 @@
 
 namespace graphics_engine::types {
 
+enum class ErrorCode : std::uint8_t {
+  // kNoError = 0,
+  kEngineInitializationFailed = 1,
+  kGLErrorInvalidEnum,
+  kGLErrorInvalidOperation,
+  kGLErrorInvalidValue,
+  kInvalidShaderType,
+  kSceneInitFailure,
+  kShaderCompilationFailure,
+  kStbErrorLoad,
+  kStbErrorWritePng,
+  kUnknownError,
+  kNumErrorCodes  // Sentinel value to track enum size
+};
+
 template <typename T>
 using Expected = std::expected<T, std::error_code>;
 

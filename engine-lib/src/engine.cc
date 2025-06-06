@@ -9,7 +9,8 @@
 
 using ::glm::vec4;
 
-using enum ::graphics_engine::error::ErrorCode;
+using ::graphics_engine::error::MakeErrorCode;
+using enum ::graphics_engine::types::ErrorCode;
 using ::graphics_engine::types::Expected;
 
 using ::std::unexpected;

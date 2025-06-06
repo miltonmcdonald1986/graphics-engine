@@ -8,21 +8,11 @@
 #include <cstdint>
 #include <system_error>
 
+#include "graphics-engine/types.h"
+
 namespace graphics_engine::error {
 
-enum class ErrorCode : std::uint8_t {
-  // kNoError = 0,
-  kEngineInitializationFailed = 1,
-  kGLErrorInvalidEnum,
-  kGLErrorInvalidOperation,
-  kGLErrorInvalidValue,
-  kStbErrorLoad,
-  kStbErrorWritePng,
-  kUnknownError,
-  kCount  // Sentinel value to track enum size
-};
-
-auto MakeErrorCode(ErrorCode code) -> std::error_code;
+auto MakeErrorCode(::graphics_engine::types::ErrorCode code) -> std::error_code;
 
 }  // namespace graphics_engine::error
 

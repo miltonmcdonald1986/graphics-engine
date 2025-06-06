@@ -45,5 +45,8 @@ if(WIN32 AND BUILD_SHARED_LIBS)
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_BINARY_DIR}/engine-lib/$<CONFIG>
             ${CMAKE_BINARY_DIR}/demo-app/$<CONFIG>
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_BINARY_DIR}/engine-lib/$<CONFIG>
+            ${CMAKE_BINARY_DIR}/engine-tests/$<CONFIG>
     )
 endif()

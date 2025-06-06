@@ -26,9 +26,6 @@ if(WIN32 AND BUILD_SHARED_LIBS)
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_BINARY_DIR}/bin/$<CONFIG>
             ${CMAKE_BINARY_DIR}/engine-tests/$<CONFIG>
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_BINARY_DIR}/engine-lib/$<CONFIG>
-            ${CMAKE_BINARY_DIR}/engine-tests/$<CONFIG>
 		COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_BINARY_DIR}/third-party/glfw/src/$<CONFIG>/glfw3.dll
             ${CMAKE_BINARY_DIR}/engine-tests/$<CONFIG>
