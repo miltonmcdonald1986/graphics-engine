@@ -14,6 +14,7 @@
 #include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
 
+using ::graphics_engine::error::CheckGLError;
 using ::graphics_engine::error::MakeErrorCode;
 using enum ::graphics_engine::types::ErrorCode;
 using ::graphics_engine::types::Expected;
@@ -74,7 +75,7 @@ auto CaptureScreenshot(const optional<path>& dest) -> Expected<void> {
   const path png_path = dest.value_or(temp_directory_path() / "screenshot.png");
   array<GLint, 4> viewport{};
   glGetIntegerv(GL_VIEWPORT, viewport.data());
-  assert(glGetError() == GL_NO_ERROR);
+  CheckGLError();
 
   static_assert(is_same_v<GLsizei, GLint>,
                 "GLsizei and GLint are not the same type!");
@@ -87,7 +88,7 @@ auto CaptureScreenshot(const optional<path>& dest) -> Expected<void> {
   size_t size = sz_width * sz_height * num_channels;
   vector<byte> pixels(size);
   glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
-  assert(glGetError() == GL_NO_ERROR);
+  CheckGLError();
 
   stbi_flip_vertically_on_write(static_cast<int>(true));
 

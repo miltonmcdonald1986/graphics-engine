@@ -9,6 +9,7 @@
 
 using ::glm::vec4;
 
+using ::graphics_engine::error::CheckGLError;
 using ::graphics_engine::error::MakeErrorCode;
 using enum ::graphics_engine::types::ErrorCode;
 using ::graphics_engine::types::Expected;
@@ -19,14 +20,9 @@ namespace graphics_engine::engine {
 
 auto ClearBuffers() -> Expected<void> {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  switch (glGetError()) {
-    case GL_INVALID_VALUE:
-      return unexpected(MakeErrorCode(kGLErrorInvalidValue));
-    case GL_NO_ERROR:
-      return {};
-    default:
-      return unexpected(MakeErrorCode(kUnknownError));
-  }
+  CheckGLError();
+
+  return {};
 }
 
 auto InitializeEngine() -> Expected<void> {
@@ -39,7 +35,7 @@ auto InitializeEngine() -> Expected<void> {
 
 auto Render() -> Expected<void> {
   glClear(GL_COLOR_BUFFER_BIT);
-  assert(glGetError() == GL_NO_ERROR);
+  CheckGLError();
   return {};
 }
 

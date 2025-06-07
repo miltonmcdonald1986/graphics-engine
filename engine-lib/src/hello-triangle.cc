@@ -4,6 +4,7 @@
 
 #include "graphics-engine/hello-triangle.h"
 
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <ranges>
@@ -14,8 +15,10 @@
 #include "graphics-engine/shader.h"
 
 using enum ::graphics_engine::types::ErrorCode;
+using ::graphics_engine::error::CheckGLError;
 using ::graphics_engine::error::MakeErrorCode;
 using ::graphics_engine::shader::CompileShader;
+using ::graphics_engine::shader::CreateAndLinkShaderProgram;
 using ::graphics_engine::shader::CreateShader;
 using enum ::graphics_engine::shader::ShaderType;
 using ::graphics_engine::types::Expected;
@@ -33,74 +36,37 @@ static_assert(is_same_v<GLuint, unsigned int>,
 namespace graphics_engine::hello_triangle {
 
 auto HelloTriangle::Initialize() -> Expected<void> {
-  Expected<GLuint> expected_vertex_shader_id = CreateShader(kVertex);
-  if (!expected_vertex_shader_id.has_value()) {
-    cerr << "Failed to create vertex shader: "
-         << expected_vertex_shader_id.error().message() << '\n';
-    return unexpected(MakeErrorCode(kSceneInitFailure));
-  }
 
-  GLuint vertex_shader_id = expected_vertex_shader_id.value();
-  const string vertex_shader_source = R"(#version 330 core
+  const string vs_src = R"(#version 330 core
 layout (location = 0) in vec3 aPos;
 void main()
 {
   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
 })";
 
-  Expected<void> expected_compilation_resut =
-      CompileShader(vertex_shader_id, vertex_shader_source);
-  if (!expected_compilation_resut.has_value()) {
-    cerr << "Vertex shader compilation failed: "
-         << expected_compilation_resut.error().message() << '\n';
-    return unexpected(MakeErrorCode(kSceneInitFailure));
-  }
+  Expected<GLuint> vs_id = CreateAndCompileShader(kVertex, vs_src);
+  assert(vs_id.has_value());
 
-  Expected<GLuint> expected_fragment_shader_id = CreateShader(kFragment);
-  if (!expected_fragment_shader_id.has_value()) {
-    cerr << "Failed to create fragment shader: "
-         << expected_fragment_shader_id.error().message() << '\n';
-    return unexpected(MakeErrorCode(kSceneInitFailure));
-  }
-
-  GLuint fragment_shader_id = expected_fragment_shader_id.value();
-  const string fragment_shader_source = R"(#version 330 core
+  const string fs_src = R"(#version 330 core
 out vec4 FragColor;
 void main()
 {
   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
 })";
 
-  expected_compilation_resut =
-      CompileShader(fragment_shader_id, fragment_shader_source);
-  if (!expected_compilation_resut.has_value()) {
-    cerr << "Fragment shader compilation failed: "
-         << expected_compilation_resut.error().message() << '\n';
-    return unexpected(MakeErrorCode(kSceneInitFailure));
-  }
+  Expected<GLuint> fs_id = CreateAndCompileShader(kFragment, fs_src);
+  assert(fs_id.has_value());
 
-  shader_program_ = glCreateProgram();
-  assert(glGetError() == GL_NO_ERROR);
+  auto program_id = CreateAndLinkShaderProgram({*vs_id, *fs_id});
+  assert(program_id.has_value());
+    
+  shader_program_ = *program_id;
+  
+  glDeleteShader(*vs_id);
+  CheckGLError();
 
-  glAttachShader(shader_program_, vertex_shader_id);
-  assert(glGetError() == GL_NO_ERROR);
-
-  glAttachShader(shader_program_, fragment_shader_id);
-  assert(glGetError() == GL_NO_ERROR);
-
-  glLinkProgram(shader_program_);
-  assert(glGetError() == GL_NO_ERROR);
-
-  GLint link_status{};
-  glGetProgramiv(shader_program_, GL_LINK_STATUS, &link_status);
-  assert(glGetError() == GL_NO_ERROR);
-  assert(link_status == GL_TRUE);
-
-  glDeleteShader(vertex_shader_id);
-  assert(glGetError() == GL_NO_ERROR);
-
-  glDeleteShader(fragment_shader_id);
-  assert(glGetError() == GL_NO_ERROR);
+  glDeleteShader(*fs_id);
+  CheckGLError();
 
   const std::array<float, 9> vertices = {
       -0.5F, -0.5F, 0.0F,  // left

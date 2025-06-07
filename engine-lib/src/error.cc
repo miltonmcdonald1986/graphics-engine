@@ -41,8 +41,8 @@ class ErrorCategory : public error_category {
         return "An invalid shader type was provided.";
       case kSceneInitFailure:
         return "Failed to initialize scene.";
-      case kShaderCompilationFailure:
-        return "Shader compilation failed.";
+      case kShaderError:
+        return "Shader Error.";
       case kStbErrorLoad:
         return "Stb Error: Failed to load file.";
       case kStbErrorWritePng:
@@ -57,6 +57,8 @@ auto GetErrorCategory() -> const ErrorCategory& {
   static ErrorCategory instance;
   return instance;
 }
+
+auto CheckGLError() -> void { assert(glGetError() == GL_NO_ERROR); }
 
 auto MakeErrorCode(ErrorCode code) -> error_code {
   return {to_underlying(code), GetErrorCategory()};

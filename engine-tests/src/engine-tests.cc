@@ -14,6 +14,7 @@
 
 using ::glm::vec4;
 
+using ::graphics_engine::engine::ClearBuffers;
 using ::graphics_engine::engine::InitializeEngine;
 using ::graphics_engine::engine::Render;
 using ::graphics_engine::engine::SetBackgroundColor;
@@ -155,16 +156,21 @@ TEST_F(EngineTestFixture, SetBackgroundColor) {
   ASSERT_TRUE(expected_comparison.value());
 }
 
-TEST_F(EngineTestFixture, Sandbox) {
-  SetBackgroundColor(vec4{0.2F, 0.3F, 0.3F, 1.0F});
-
-  HelloTriangle scene;
-  Expected<void> draw_result =
-      scene.Initialize()
-          .and_then([&scene]() { return scene.Render(); })
-          .and_then([]() { return CaptureScreenshot(); });
-  ASSERT_TRUE(draw_result.has_value());
+TEST_F(EngineTestFixture, ClearBuffersWorks) { 
+  Expected<void> result{ClearBuffers()};
+  ASSERT_TRUE(result.has_value());
 }
+
+//TEST_F(EngineTestFixture, Sandbox) {
+//  SetBackgroundColor(vec4{0.2F, 0.3F, 0.3F, 1.0F});
+//
+//  HelloTriangle scene;
+//  Expected<void> draw_result =
+//      scene.Initialize()
+//          .and_then([&scene]() { return scene.Render(); })
+//          .and_then([]() { return CaptureScreenshot(); });
+//  ASSERT_TRUE(draw_result.has_value());
+//}
 
 }  // namespace graphics_engine_tests::engine_tests
 

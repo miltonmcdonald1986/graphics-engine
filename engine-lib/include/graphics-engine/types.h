@@ -19,7 +19,7 @@ enum class ErrorCode : std::uint8_t {
   kGLErrorInvalidValue,
   kInvalidShaderType,
   kSceneInitFailure,
-  kShaderCompilationFailure,
+  kShaderError,
   kStbErrorLoad,
   kStbErrorWritePng,
   kUnknownError,

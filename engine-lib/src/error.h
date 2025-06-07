@@ -5,13 +5,17 @@
 #ifndef ENGINE_LIB_ERROR_H_
 #define ENGINE_LIB_ERROR_H_
 
+#include <cassert>
 #include <cstdint>
 #include <system_error>
+
+#include "glad/glad.h"
 
 #include "graphics-engine/types.h"
 
 namespace graphics_engine::error {
 
+auto CheckGLError() -> void;
 auto MakeErrorCode(::graphics_engine::types::ErrorCode code) -> std::error_code;
 
 }  // namespace graphics_engine::error
