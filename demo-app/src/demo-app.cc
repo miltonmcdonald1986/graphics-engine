@@ -22,6 +22,9 @@ using ::graphics_engine::image::CaptureScreenshot;
 using ::graphics_engine::types::Expected;
 using ::graphics_engine::version::GetEngineLibVersion;
 
+using ::std::cerr;
+using ::std::error_code;
+
 auto main() -> int {
 #ifdef _WIN32
   // Enable Memory Leak Detection
@@ -56,10 +59,13 @@ auto main() -> int {
 
     return -1;
   }
-  
+
   HelloTriangle scene;
   auto expected_result = scene.Initialize();
-  assert(expected_result.has_value());
+  if (!expected_result.has_value()) {
+    assert(false);
+    return -1;
+  }
 
   const vec4 defaultBackgroundColor{0.2F, 0.3F, 0.3F, 1.0F};
   SetBackgroundColor(defaultBackgroundColor);
@@ -67,17 +73,18 @@ auto main() -> int {
   while (glfwWindowShouldClose(window) == GLFW_FALSE) {
     assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
 
-    ClearBuffers()
-        .and_then([&scene]() { return scene.Render(); })
-        .transform_error([](const std::error_code& err) 
-          {
-          std::cerr << err.message() << '\n';
-          return err;
-          });
-    
-    Expected<void> render_result = scene.Render();
-    if (!render_result.has_value()) {
-      break;
+    Expected<void> did_clear = ClearBuffers();
+    if (!did_clear.has_value()) {
+      const error_code& err = did_clear.error();
+      cerr << err.message() << '\n';
+      return err.value();
+    }
+
+    Expected<void> did_render = scene.Render();
+    if (!did_render.has_value()) {
+      const error_code& err = did_render.error();
+      cerr << err.message() << '\n';
+      return err.value();
     }
 
     glfwSwapBuffers(window);

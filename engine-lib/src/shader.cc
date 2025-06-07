@@ -9,6 +9,7 @@
 #include <iostream>
 #include <ranges>
 #include <unordered_map>
+#include <utility>
 
 #include "error.h"
 #include "glad/glad.h"
@@ -37,10 +38,15 @@ namespace {
 constexpr int kExpectedCount = 3;
 static_assert(to_underlying(kNumShaderTypes) == kExpectedCount,
               "Add a new pair to kShaderTypeMap!");
-static const unordered_map<ShaderType, GLenum> kShaderTypeMap = {
-    {kFragment, GL_FRAGMENT_SHADER},
-    {kGeometry, GL_GEOMETRY_SHADER},
-    {kVertex, GL_VERTEX_SHADER}};
+
+auto GetShaderTypeMap() -> const unordered_map<ShaderType, GLenum>& {
+  static const unordered_map<ShaderType, GLenum> kShaderTypeMap{
+      {kFragment, GL_FRAGMENT_SHADER},
+      {kGeometry, GL_GEOMETRY_SHADER},
+      {kVertex, GL_VERTEX_SHADER}};
+
+  return kShaderTypeMap;
+}
 
 }  // namespace
 
@@ -60,7 +66,7 @@ auto CompileShader(unsigned int shader_id, const string& source_code)
   GLint compile_status{};
   glGetShaderiv(shader_id, GL_COMPILE_STATUS, &compile_status);
   assert(glGetError() == GL_NO_ERROR);
-  
+
   if (compile_status == GL_FALSE) {
     GLint info_log_length{};
     glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &info_log_length);
@@ -80,9 +86,11 @@ auto CompileShader(unsigned int shader_id, const string& source_code)
 }
 
 auto CreateShader(ShaderType type) -> Expected<unsigned int> {
+  const auto& kShaderTypeMap = GetShaderTypeMap();
   const auto& acceptable_keys = keys(kShaderTypeMap);
-  if (!contains(acceptable_keys, type))
+  if (!contains(acceptable_keys, type)) {
     return unexpected(MakeErrorCode(kInvalidShaderType));
+  }
 
   GLuint shader = glCreateShader(kShaderTypeMap.at(type));
   assert(glGetError() == GL_NO_ERROR);

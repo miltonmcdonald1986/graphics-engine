@@ -9,9 +9,8 @@
 #include <ranges>
 #include <unordered_map>
 
-#include "glad/glad.h"
-
 #include "error.h"
+#include "glad/glad.h"
 #include "graphics-engine/shader.h"
 
 using enum ::graphics_engine::types::ErrorCode;
@@ -103,29 +102,30 @@ void main()
   glDeleteShader(fragment_shader_id);
   assert(glGetError() == GL_NO_ERROR);
 
-  float vertices[] = {
-      -0.5f, -0.5f, 0.0f,  // left
-      0.5f,  -0.5f, 0.0f,  // right
-      0.0f,  0.5f,  0.0f   // top
+  const std::array<float, 9> vertices = {
+      -0.5F, -0.5F, 0.0F,  // left
+      0.5F,  -0.5F, 0.0F,  // right
+      0.0F,  0.5F,  0.0F   // top
   };
 
   GLuint vbo{};
   glGenVertexArrays(1, &vbo);
   glGenBuffers(1, &vao_);
-  
+
   glBindVertexArray(vao_);
 
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(),
+               GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
   glEnableVertexAttribArray(0);
 
   return {};
 }
 
-auto HelloTriangle::Render() -> Expected<void> {
-  glUseProgram(shader_program_);
+auto HelloTriangle::Render() const -> Expected<void> {
+  glUseProgram(this->shader_program_);
   glBindVertexArray(
       vao_);  // seeing as we only have a single VAO there's no need to bind it
               // every time, but we'll do so to keep things a bit more organized

@@ -12,12 +12,12 @@ namespace graphics_engine::hello_triangle {
 
 class DLLEXPORT HelloTriangle {
  public:
-  auto [[nodiscard]] Initialize() -> ::graphics_engine::types::Expected<void>;
-  auto [[nodiscard]] Render() -> ::graphics_engine::types::Expected<void>;
+  [[nodiscard]] auto Initialize() -> ::graphics_engine::types::Expected<void>;
+  [[nodiscard]] auto Render() const -> ::graphics_engine::types::Expected<void>;
 
  private:
-  unsigned int shader_program_{};
-  unsigned int vao_{};
+  unsigned int shader_program_ = 0;
+  unsigned int vao_ = 0;
 };
 
 }  // namespace graphics_engine::hello_triangle

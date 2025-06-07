@@ -11,8 +11,8 @@ using enum ::graphics_engine::types::ErrorCode;
 
 using std::error_category;
 using std::error_code;
-using std::to_underlying;
 using std::string;
+using std::to_underlying;
 
 namespace graphics_engine::error {
 

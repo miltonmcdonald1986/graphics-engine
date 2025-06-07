@@ -5,6 +5,7 @@
 #ifndef ENGINE_LIB_TYPES_H_
 #define ENGINE_LIB_TYPES_H_
 
+#include <cstdint>
 #include <expected>
 #include <system_error>
 

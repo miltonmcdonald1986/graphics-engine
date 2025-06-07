@@ -10,7 +10,12 @@
 
 namespace graphics_engine::shader {
 
-enum class ShaderType { kFragment, kGeometry, kVertex, kNumShaderTypes };
+enum class ShaderType : std::uint8_t {
+  kFragment,
+  kGeometry,
+  kVertex,
+  kNumShaderTypes
+};
 
 DLLEXPORT [[nodiscard]] auto CompileShader(unsigned int shader_id,
                                            const std::string& source_code)
