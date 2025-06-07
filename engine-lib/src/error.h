@@ -10,7 +10,6 @@
 #include <system_error>
 
 #include "glad/glad.h"
-
 #include "graphics-engine/types.h"
 
 namespace graphics_engine::error {

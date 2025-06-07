@@ -23,32 +23,26 @@ class ErrorCategory : public error_category {
   }
 
   [[nodiscard]] auto message(int condition) const -> string override {
-    constexpr int expectedCount = 11;
+    constexpr int expectedCount = 10;
     static_assert(to_underlying(kNumErrorCodes) == expectedCount,
                   "Update the switch statement below!");
 
     switch (static_cast<ErrorCode>(condition)) {
       default:
+        assert(false); // If we get here, add a new case to the switch
+        [[fallthrough]];
       case kEngineInitializationFailed:
         return "Engine Initialization failed.";
-      case kGLErrorInvalidEnum:
-        return "OpenGL Error: Invalid Enum.";
       case kGLErrorInvalidOperation:
         return "OpenGL Error: Invalid Operation.";
       case kGLErrorInvalidValue:
         return "OpenGL Error: Invalid Value.";
-      case kInvalidShaderType:
-        return "An invalid shader type was provided.";
-      case kSceneInitFailure:
-        return "Failed to initialize scene.";
       case kShaderError:
         return "Shader Error.";
       case kStbErrorLoad:
         return "Stb Error: Failed to load file.";
       case kStbErrorWritePng:
         return "Stb Error: Failed to write png file.";
-      case kUnknownError:
-        return "An unknown error occurred.";
     }
   }
 };

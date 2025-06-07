@@ -24,7 +24,6 @@ using ::graphics_engine::types::Expected;
 
 using ::std::cerr;
 using ::std::exception;
-using ::std::for_each;
 using ::std::format;
 using ::std::is_same_v;
 using ::std::runtime_error;
@@ -34,6 +33,7 @@ using ::std::unexpected;
 using ::std::unordered_map;
 using ::std::vector;
 using ::std::ranges::contains;
+using ::std::ranges::for_each;
 using ::std::views::keys;
 
 static_assert(is_same_v<GLchar, char>,
@@ -153,22 +153,20 @@ auto CreateAndCompileShader(ShaderType type, const string& source_code)
 
 auto CreateAndLinkShaderProgram(const vector<unsigned int>& shader_ids)
     -> Expected<unsigned int> {
-  
   Expected<unsigned int> program_id = CreateProgram();
   CheckGLError();
 
   try {
-    for_each(shader_ids.begin(), shader_ids.end(),
-             [&program_id](GLuint shader_id) {
-               if (Expected<void> result{AttachShader(*program_id, shader_id)};
-                   !result.has_value()) {
-                 int val = result.error().value();
-                 constexpr const char* fmt =
-                     "AttachShader failed with error code {}: {}";
-                 const string msg = result.error().message();
-                 throw runtime_error(format(fmt, val, msg));
-               }
-             });
+    for_each(shader_ids, [&program_id](GLuint shader_id) {
+      if (Expected<void> result{AttachShader(*program_id, shader_id)};
+          !result.has_value()) {
+        int val = result.error().value();
+        constexpr const char* fmt =
+            "AttachShader failed with error code {}: {}";
+        const string msg = result.error().message();
+        throw runtime_error(format(fmt, val, msg));
+      }
+    });
   } catch (const exception& e) {
     cerr << "Caught std::exception: " << e.what() << '\n';
     return unexpected(MakeErrorCode(kShaderError));
@@ -211,7 +209,7 @@ auto ShaderSource(unsigned int shader, int count, const char* const* string,
     cerr << "glShaderSource failed with error code " << error << '\n';
     switch (error) {
       default:
-        assert(false); // If we get here, add a new case to the switch
+        assert(false);  // If we get here, add a new case to the switch
         [[fallthrough]];
       case GL_INVALID_VALUE:
         return unexpected(MakeErrorCode(kGLErrorInvalidValue));

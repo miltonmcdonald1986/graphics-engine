@@ -21,7 +21,8 @@ enum class ShaderType : std::uint8_t {
 };
 
 /// @brief Wrapper around glAttachShader with error handling.
-/// @param program Specifies the program object to which a shader object will be attached.
+/// @param program Specifies the program object to which a shader object will be
+/// attached.
 /// @param shader Specifies the shader object that is to be attached.
 /// @return void on success, error on failure.
 DLLEXPORT [[nodiscard]] auto AttachShader(unsigned int program,

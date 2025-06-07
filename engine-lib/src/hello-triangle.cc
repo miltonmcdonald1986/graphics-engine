@@ -36,7 +36,6 @@ static_assert(is_same_v<GLuint, unsigned int>,
 namespace graphics_engine::hello_triangle {
 
 auto HelloTriangle::Initialize() -> Expected<void> {
-
   const string vs_src = R"(#version 330 core
 layout (location = 0) in vec3 aPos;
 void main()
@@ -59,9 +58,9 @@ void main()
 
   auto program_id = CreateAndLinkShaderProgram({*vs_id, *fs_id});
   assert(program_id.has_value());
-    
+
   shader_program_ = *program_id;
-  
+
   glDeleteShader(*vs_id);
   CheckGLError();
 

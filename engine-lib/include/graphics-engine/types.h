@@ -22,7 +22,6 @@ enum class ErrorCode : std::uint8_t {
   kShaderError,
   kStbErrorLoad,
   kStbErrorWritePng,
-  kUnknownError,
   kNumErrorCodes  // Sentinel value to track enum size
 };
 
