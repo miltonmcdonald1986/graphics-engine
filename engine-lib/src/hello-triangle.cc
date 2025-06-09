@@ -18,6 +18,7 @@ using enum ::graphics_engine::types::ErrorCode;
 using ::graphics_engine::error::CheckGLError;
 using ::graphics_engine::error::MakeErrorCode;
 using ::graphics_engine::shader::CompileShader;
+using ::graphics_engine::shader::DeleteShader;
 using ::graphics_engine::shader::CreateAndLinkShaderProgram;
 using ::graphics_engine::shader::CreateShader;
 using enum ::graphics_engine::shader::ShaderType;
@@ -61,11 +62,11 @@ void main()
 
   shader_program_ = *program_id;
 
-  glDeleteShader(*vs_id);
-  CheckGLError();
+  Expected<void> result = DeleteShader(*vs_id);
+  assert(result.has_value());
 
-  glDeleteShader(*fs_id);
-  CheckGLError();
+  result = DeleteShader(*fs_id);
+  assert(result.has_value());
 
   const std::array<float, 9> vertices = {
       -0.5F, -0.5F, 0.0F,  // left

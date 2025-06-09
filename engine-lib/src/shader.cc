@@ -202,6 +202,23 @@ auto CreateShader(ShaderType type) -> Expected<unsigned int> {
   return shader;
 }
 
+DLLEXPORT [[nodiscard]] auto DeleteShader(unsigned int shader_id)
+    -> ::graphics_engine::types::Expected<void> {
+  glDeleteShader(shader_id);
+  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
+    cerr << "glDeleteShader failed with error code " << error << '\n';
+    switch (error) {
+      default:
+        assert(false); // If we get here, add a new case to the switch
+        [[fallthrough]];
+      case GL_INVALID_VALUE:
+        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
+    }
+  }
+
+  return {};
+}
+
 auto ShaderSource(unsigned int shader, int count, const char* const* string,
                   const int* length) -> Expected<void> {
   glShaderSource(shader, count, string, length);

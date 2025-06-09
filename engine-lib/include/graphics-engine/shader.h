@@ -69,6 +69,12 @@ DLLEXPORT [[nodiscard]] auto CreateProgram()
 DLLEXPORT [[nodiscard]] auto CreateShader(ShaderType type)
     -> ::graphics_engine::types::Expected<unsigned int>;
 
+/// @brief Wrapper around glDeleteShader with error handling.
+/// @param shader_id Specifies the shader object to be deleted.
+/// @return void on success, error on failure.
+DLLEXPORT [[nodiscard]] auto DeleteShader(unsigned int shader_id)
+    -> ::graphics_engine::types::Expected<void>;
+
 /// @brief Wrapper around glShaderSource with error handling.
 /// @param shader Specifies the handle of the shader object whose source code is
 /// to be replaced.
