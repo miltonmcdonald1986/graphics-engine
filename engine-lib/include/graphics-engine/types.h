@@ -11,6 +11,24 @@
 
 namespace graphics_engine::types {
 
+enum class ErrorCode : std::uint8_t {
+  // kNoError = 0,
+  kEngineInitializationFailed = 1,
+  kGLErrorInvalidEnum,
+  kGLErrorInvalidOperation,
+  kGLErrorInvalidValue,
+  kGLErrorOutOfMemory,
+  kInvalidShaderType,
+  kSceneInitFailure,
+  kShaderError,
+  kStbErrorLoad,
+  kStbErrorWritePng,
+  kNumErrorCodes  // Sentinel value to track enum size
+};
+
+template <typename T>
+using Expected = std::expected<T, std::error_code>;
+
 enum class GLBufferTarget {
   Array,
   CopyRead,
@@ -23,22 +41,17 @@ enum class GLBufferTarget {
   Uniform
 };
 
-enum class ErrorCode : std::uint8_t {
-  // kNoError = 0,
-  kEngineInitializationFailed = 1,
-  kGLErrorInvalidEnum,
-  kGLErrorInvalidOperation,
-  kGLErrorInvalidValue,
-  kInvalidShaderType,
-  kSceneInitFailure,
-  kShaderError,
-  kStbErrorLoad,
-  kStbErrorWritePng,
-  kNumErrorCodes  // Sentinel value to track enum size
+enum class GLDataUsagePattern {
+  StreamDraw,
+  StreamRead,
+  StreamCopy,
+  StaticDraw,
+  StaticRead,
+  StaticCopy,
+  DynamicDraw,
+  DynamicRead,
+  DynamicCopy
 };
-
-template <typename T>
-using Expected = std::expected<T, std::error_code>;
 
 }  // namespace graphics_engine::types
 

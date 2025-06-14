@@ -23,7 +23,7 @@ class ErrorCategory : public error_category {
   }
 
   [[nodiscard]] auto message(int condition) const -> string override {
-    constexpr int expectedCount = 10;
+    constexpr int expectedCount = 11;
     static_assert(to_underlying(kNumErrorCodes) == expectedCount,
                   "Update the switch statement below!");
 
@@ -37,6 +37,8 @@ class ErrorCategory : public error_category {
         return "OpenGL Error: Invalid Operation.";
       case kGLErrorInvalidValue:
         return "OpenGL Error: Invalid Value.";
+      case kGLErrorOutOfMemory:
+        return "OpenGL Error: Out of Memory.";
       case kShaderError:
         return "Shader Error.";
       case kStbErrorLoad:

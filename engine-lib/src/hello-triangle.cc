@@ -17,11 +17,13 @@
 
 using enum ::graphics_engine::types::ErrorCode;
 using enum ::graphics_engine::types::GLBufferTarget;
+using enum ::graphics_engine::types::GLDataUsagePattern;
 
 using ::graphics_engine::error::CheckGLError;
 using ::graphics_engine::error::MakeErrorCode;
 using ::graphics_engine::gl_wrappers::BindBuffer;
 using ::graphics_engine::gl_wrappers::BindVertexArray;
+using ::graphics_engine::gl_wrappers::BufferData;
 using ::graphics_engine::gl_wrappers::GenBuffers;
 using ::graphics_engine::gl_wrappers::GenVertexArrays;
 using ::graphics_engine::shader::CompileShader;
@@ -106,8 +108,11 @@ void main()
     return std::unexpected(result.error());
   }
 
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(),
-               GL_STATIC_DRAW);
+  result = BufferData(Array, sizeof(vertices), vertices.data(), StaticDraw);
+  if (!result.has_value()) {
+    assert(false);
+    return std::unexpected(result.error());
+  }
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
   glEnableVertexAttribArray(0);
