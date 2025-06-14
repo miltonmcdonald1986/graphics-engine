@@ -209,7 +209,7 @@ DLLEXPORT [[nodiscard]] auto DeleteShader(unsigned int shader_id)
     cerr << "glDeleteShader failed with error code " << error << '\n';
     switch (error) {
       default:
-        assert(false); // If we get here, add a new case to the switch
+        assert(false);  // If we get here, add a new case to the switch
         [[fallthrough]];
       case GL_INVALID_VALUE:
         return unexpected(MakeErrorCode(kGLErrorInvalidValue));

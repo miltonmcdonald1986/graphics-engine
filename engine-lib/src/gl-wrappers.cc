@@ -26,8 +26,14 @@ using ::std::is_same_v;
 using ::std::unexpected;
 
 static_assert(is_same_v<GLsizei, int>, "GLint and int are not the same type!");
+
+#ifdef _WIN64
 static_assert(is_same_v<GLsizeiptr, long long int>,
               "GLsizeiptr and long long int are not the same type!");
+#else
+static_assert(is_same_v<GLsizeiptr, long int>,
+              "GLsizeiptr and long long int are not the same type!");
+#endif
 static_assert(is_same_v<GLuint, unsigned int>,
               "GLuint and unsigned int are not the same type!");
 static_assert(is_same_v<GLvoid, void>,
@@ -37,8 +43,7 @@ namespace graphics_engine::gl_wrappers {
 
 namespace {
 
-auto ConvertGLBufferTarget(GLBufferTarget target) -> GLenum 
-{
+auto ConvertGLBufferTarget(GLBufferTarget target) -> GLenum {
   switch (target) {
     default:
       assert(false);  // If we get here, add a new case to the switch.
@@ -67,7 +72,7 @@ auto ConvertGLBufferTarget(GLBufferTarget target) -> GLenum
 auto ConvertGLDataUsagePattern(GLDataUsagePattern usage) -> GLenum {
   switch (usage) {
     default:
-      assert(false); // If we get here, add a new case to the switch.
+      assert(false);  // If we get here, add a new case to the switch.
       [[fallthrough]];
     case StreamDraw:
       return GL_STREAM_DRAW;
@@ -90,7 +95,7 @@ auto ConvertGLDataUsagePattern(GLDataUsagePattern usage) -> GLenum {
   }
 }
 
-}
+}  // namespace
 
 auto BindBuffer(GLBufferTarget target, unsigned int buffer) -> Expected<void> {
   GLenum gl_target = ConvertGLBufferTarget(target);

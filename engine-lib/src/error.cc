@@ -29,7 +29,7 @@ class ErrorCategory : public error_category {
 
     switch (static_cast<ErrorCode>(condition)) {
       default:
-        assert(false); // If we get here, add a new case to the switch
+        assert(false);  // If we get here, add a new case to the switch
         [[fallthrough]];
       case kEngineInitializationFailed:
         return "Engine Initialization failed.";

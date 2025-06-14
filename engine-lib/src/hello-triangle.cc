@@ -27,9 +27,9 @@ using ::graphics_engine::gl_wrappers::BufferData;
 using ::graphics_engine::gl_wrappers::GenBuffers;
 using ::graphics_engine::gl_wrappers::GenVertexArrays;
 using ::graphics_engine::shader::CompileShader;
-using ::graphics_engine::shader::DeleteShader;
 using ::graphics_engine::shader::CreateAndLinkShaderProgram;
 using ::graphics_engine::shader::CreateShader;
+using ::graphics_engine::shader::DeleteShader;
 using enum ::graphics_engine::shader::ShaderType;
 using ::graphics_engine::types::Expected;
 
