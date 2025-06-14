@@ -11,6 +11,18 @@
 
 namespace graphics_engine::types {
 
+enum class GLBufferTarget {
+  Array,
+  CopyRead,
+  CopyWrite,
+  ElementArray,
+  PixelPack,
+  PixelUnpack,
+  Texture,
+  TransformFeedback,
+  Uniform
+};
+
 enum class ErrorCode : std::uint8_t {
   // kNoError = 0,
   kEngineInitializationFailed = 1,

@@ -16,9 +16,13 @@
 #include "graphics-engine/shader.h"
 
 using enum ::graphics_engine::types::ErrorCode;
+using enum ::graphics_engine::types::GLBufferTarget;
 
 using ::graphics_engine::error::CheckGLError;
 using ::graphics_engine::error::MakeErrorCode;
+using ::graphics_engine::gl_wrappers::BindBuffer;
+using ::graphics_engine::gl_wrappers::BindVertexArray;
+using ::graphics_engine::gl_wrappers::GenBuffers;
 using ::graphics_engine::gl_wrappers::GenVertexArrays;
 using ::graphics_engine::shader::CompileShader;
 using ::graphics_engine::shader::DeleteShader;
@@ -83,11 +87,25 @@ void main()
     return std::unexpected(result.error());
   }
 
-  glBindVertexArray(vao_);
+  result = BindVertexArray(vao_);
+  if (!result.has_value()) {
+    assert(false);
+    return std::unexpected(result.error());
+  }
 
   GLuint vbo{};
-  glGenBuffers(1, &vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  result = GenBuffers(1, &vbo);
+  if (!result.has_value()) {
+    assert(false);
+    return std::unexpected(result.error());
+  }
+
+  result = BindBuffer(Array, vbo);
+  if (!result.has_value()) {
+    assert(false);
+    return std::unexpected(result.error());
+  }
+
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(),
                GL_STATIC_DRAW);
 
