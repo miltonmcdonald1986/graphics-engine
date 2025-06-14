@@ -12,11 +12,14 @@
 
 #include "error.h"
 #include "glad/glad.h"
+#include "graphics-engine/gl-wrappers.h"
 #include "graphics-engine/shader.h"
 
 using enum ::graphics_engine::types::ErrorCode;
+
 using ::graphics_engine::error::CheckGLError;
 using ::graphics_engine::error::MakeErrorCode;
+using ::graphics_engine::gl_wrappers::GenVertexArrays;
 using ::graphics_engine::shader::CompileShader;
 using ::graphics_engine::shader::DeleteShader;
 using ::graphics_engine::shader::CreateAndLinkShaderProgram;
@@ -44,15 +47,15 @@ void main()
   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
 })";
 
-  Expected<GLuint> vs_id = CreateAndCompileShader(kVertex, vs_src);
-  assert(vs_id.has_value());
-
   const string fs_src = R"(#version 330 core
 out vec4 FragColor;
 void main()
 {
   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
 })";
+
+  Expected<GLuint> vs_id = CreateAndCompileShader(kVertex, vs_src);
+  assert(vs_id.has_value());
 
   Expected<GLuint> fs_id = CreateAndCompileShader(kFragment, fs_src);
   assert(fs_id.has_value());
@@ -74,12 +77,16 @@ void main()
       0.0F,  0.5F,  0.0F   // top
   };
 
-  GLuint vbo{};
-  glGenVertexArrays(1, &vbo);
-  glGenBuffers(1, &vao_);
+  result = GenVertexArrays(1, &vao_);
+  if (!result.has_value()) {
+    assert(false);
+    return std::unexpected(result.error());
+  }
 
   glBindVertexArray(vao_);
 
+  GLuint vbo{};
+  glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(),
                GL_STATIC_DRAW);
