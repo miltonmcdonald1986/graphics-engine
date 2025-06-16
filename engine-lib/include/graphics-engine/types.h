@@ -29,30 +29,6 @@ enum class ErrorCode : std::uint8_t {
 template <typename T>
 using Expected = std::expected<T, std::error_code>;
 
-enum class GLBufferTarget {
-  Array,
-  CopyRead,
-  CopyWrite,
-  ElementArray,
-  PixelPack,
-  PixelUnpack,
-  Texture,
-  TransformFeedback,
-  Uniform
-};
-
-enum class GLDataUsagePattern {
-  StreamDraw,
-  StreamRead,
-  StreamCopy,
-  StaticDraw,
-  StaticRead,
-  StaticCopy,
-  DynamicDraw,
-  DynamicRead,
-  DynamicCopy
-};
-
 }  // namespace graphics_engine::types
 
 #endif  // ENGINE_LIB_TYPES_H_

@@ -12,20 +12,24 @@
 #include "glad/glad.h"
 #include "graphics-engine/types.h"
 
-using enum ::graphics_engine::types::ErrorCode;
-using enum graphics_engine::types::GLBufferTarget;
-using enum ::graphics_engine::types::GLDataUsagePattern;
+using enum graphics_engine::types::ErrorCode;
+using enum graphics_engine::gl_wrappers::GLBufferTarget;
+using enum graphics_engine::gl_wrappers::GLDataType;
+using enum graphics_engine::gl_wrappers::GLDataUsagePattern;
+using enum graphics_engine::gl_wrappers::GLDrawMode;
 
-using ::graphics_engine::error::MakeErrorCode;
-using ::graphics_engine::types::Expected;
-using ::graphics_engine::types::GLBufferTarget;
-using ::graphics_engine::types::GLDataUsagePattern;
+using graphics_engine::error::MakeErrorCode;
+using graphics_engine::types::Expected;
 
-using ::std::cerr;
-using ::std::is_same_v;
-using ::std::unexpected;
+using std::cerr;
+using std::is_same_v;
+using std::unexpected;
 
-static_assert(is_same_v<GLsizei, int>, "GLint and int are not the same type!");
+static_assert(is_same_v<GLboolean, unsigned char>,
+              "GLboolean and unsigned char are not the same type!");
+static_assert(is_same_v<GLint, int>, "GLint and int are not the same type!");
+static_assert(is_same_v<GLsizei, int>,
+              "GLsizei and int are not the same type!");
 
 #ifdef _WIN64
 static_assert(is_same_v<GLsizeiptr, long long int>,
@@ -48,24 +52,54 @@ auto ConvertGLBufferTarget(GLBufferTarget target) -> GLenum {
     default:
       assert(false);  // If we get here, add a new case to the switch.
       [[fallthrough]];
-    case Array:
+    case kArray:
       return GL_ARRAY_BUFFER;
-    case CopyRead:
+    case kCopyRead:
       return GL_COPY_READ_BUFFER;
-    case CopyWrite:
+    case kCopyWrite:
       return GL_COPY_WRITE_BUFFER;
-    case ElementArray:
+    case kElementArray:
       return GL_ELEMENT_ARRAY_BUFFER;
-    case PixelPack:
+    case kPixelPack:
       return GL_PIXEL_PACK_BUFFER;
-    case PixelUnpack:
+    case kPixelUnpack:
       return GL_PIXEL_UNPACK_BUFFER;
-    case Texture:
+    case kTexture:
       return GL_TEXTURE;
-    case TransformFeedback:
+    case kTransformFeedback:
       return GL_TRANSFORM_FEEDBACK_BUFFER;
-    case Uniform:
+    case kUniform:
       return GL_UNIFORM_BUFFER;
+  }
+}
+
+auto ConvertGLDataType(GLDataType type) -> GLenum {
+  switch (type) {
+    default:
+      assert(false);  // If we get here, add a new case to the switch.
+      [[fallthrough]];
+    case kByte:
+      return GL_BYTE;
+    case kUnsignedByte:
+      return GL_UNSIGNED_BYTE;
+    case kShort:
+      return GL_SHORT;
+    case kUnsignedShort:
+      return GL_UNSIGNED_SHORT;
+    case kInt:
+      return GL_INT;
+    case kUnsignedInt:
+      return GL_UNSIGNED_INT;
+    case kHalfFloat:
+      return GL_HALF_FLOAT;
+    case kFloat:
+      return GL_FLOAT;
+    case kDouble:
+      return GL_DOUBLE;
+    case kInt_2_10_10_10_Rev:
+      return GL_INT_2_10_10_10_REV;
+    case kUnsignedInt_2_10_10_10_Rev:
+      return GL_UNSIGNED_INT_2_10_10_10_REV;
   }
 }
 
@@ -74,24 +108,54 @@ auto ConvertGLDataUsagePattern(GLDataUsagePattern usage) -> GLenum {
     default:
       assert(false);  // If we get here, add a new case to the switch.
       [[fallthrough]];
-    case StreamDraw:
+    case kStreamDraw:
       return GL_STREAM_DRAW;
-    case StreamRead:
+    case kStreamRead:
       return GL_STREAM_READ;
-    case StreamCopy:
+    case kStreamCopy:
       return GL_STREAM_COPY;
-    case StaticDraw:
+    case kStaticDraw:
       return GL_STATIC_DRAW;
-    case StaticRead:
+    case kStaticRead:
       return GL_STATIC_READ;
-    case StaticCopy:
+    case kStaticCopy:
       return GL_STATIC_COPY;
-    case DynamicDraw:
+    case kDynamicDraw:
       return GL_DYNAMIC_DRAW;
-    case DynamicRead:
+    case kDynamicRead:
       return GL_DYNAMIC_READ;
-    case DynamicCopy:
+    case kDynamicCopy:
       return GL_DYNAMIC_COPY;
+  }
+}
+
+auto ConvertGLDrawMode(GLDrawMode mode) -> GLenum {
+  switch (mode) {
+    default:
+      assert(false); // If we get here, add a new case to the switch.
+      [[fallthrough]];
+    case kPoints:
+      return GL_POINTS;
+    case kLineStrip:
+      return GL_LINE_STRIP;
+    case kLineLoop:
+      return GL_LINE_LOOP;
+    case kLines:
+      return GL_LINES;
+    case kLineStripAdjacency:
+      return GL_LINE_STRIP_ADJACENCY;
+    case kLinesAdjacency:
+      return GL_LINES_ADJACENCY;
+    case kTriangleStrip:
+      return GL_TRIANGLE_STRIP;
+    case kTriangleFan:
+      return GL_TRIANGLE_FAN;
+    case kTriangles:
+      return GL_TRIANGLES;
+    case kTriangleStripAdjacency:
+      return GL_TRIANGLE_STRIP_ADJACENCY;
+    case kTrianglesAdjacency:
+      return GL_TRIANGLES_ADJACENCY;
   }
 }
 
@@ -138,7 +202,7 @@ auto BufferData(GLBufferTarget target, long long int size, const void* data,
   GLenum gl_usage = ConvertGLDataUsagePattern(usage);
   glBufferData(gl_target, size, data, gl_usage);
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
-    cerr << "glGenBuffers failed with error code " << error << '\n';
+    cerr << "glBufferData failed with error code " << error << '\n';
     switch (error) {
       default:
         assert(false);  // If we get here, add a new case to the switch.
@@ -151,6 +215,46 @@ auto BufferData(GLBufferTarget target, long long int size, const void* data,
         return unexpected(MakeErrorCode(kGLErrorInvalidValue));
       case GL_OUT_OF_MEMORY:
         return unexpected(MakeErrorCode(kGLErrorOutOfMemory));
+    }
+  }
+
+  return {};
+}
+
+auto DrawArrays(GLDrawMode mode, int first, int count) -> Expected<void> {
+  GLenum gl_mode = ConvertGLDrawMode(mode);
+  glDrawArrays(gl_mode, first, count);
+  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
+    cerr << "glDrawArrays failed with error code " << error << '\n';
+    switch (error) {
+      default:
+        assert(false);  // If we get here, add a new case to the switch.
+        [[fallthrough]];
+      case GL_INVALID_ENUM:
+        return unexpected(MakeErrorCode(kGLErrorInvalidEnum));
+      case GL_INVALID_OPERATION:
+        return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
+      case GL_INVALID_VALUE:
+        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
+    }
+  }
+
+  return {};
+}
+
+auto EnableVertexAttribArray(unsigned int index) -> Expected<void> {
+  glEnableVertexAttribArray(index);
+  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
+    cerr << "glEnableVertexAttribArray failed with error code " << error
+         << '\n';
+    switch (error) {
+      default:
+        assert(false);  // If we get here, add a new case to the switch.
+        [[fallthrough]];
+      case GL_INVALID_OPERATION:
+        return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
+      case GL_INVALID_VALUE:
+        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
     }
   }
 
@@ -172,6 +276,7 @@ auto GenBuffers(int n, unsigned int* buffers) -> Expected<void> {
 
   return {};
 }
+
 auto GenVertexArrays(int n, unsigned int* arrays) -> Expected<void> {
   glGenVertexArrays(n, arrays);
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
@@ -180,6 +285,47 @@ auto GenVertexArrays(int n, unsigned int* arrays) -> Expected<void> {
       default:
         assert(false);  // If we get here, add a new case to the switch.
         [[fallthrough]];
+      case GL_INVALID_VALUE:
+        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
+    }
+  }
+
+  return {};
+}
+
+auto UseProgram(unsigned int program) -> Expected<void> {
+  glUseProgram(program);
+  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
+    cerr << "glUseProgram failed with error code " << error << '\n';
+    switch (error) {
+      default:
+        assert(false);  // If we get here, add a new case to the switch.
+        [[fallthrough]];
+      case GL_INVALID_OPERATION:
+        return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
+      case GL_INVALID_VALUE:
+        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
+    }
+  }
+
+  return {};
+}
+
+auto VertexAttribPointer(unsigned int index, int size, GLDataType type,
+                         unsigned char normalized, int stride,
+                         const void* pointer) -> Expected<void> {
+  GLenum gl_type = ConvertGLDataType(type);
+  glVertexAttribPointer(index, size, gl_type, normalized, stride, pointer);
+  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
+    cerr << "glVertexAttribPointer failed with error code " << error << '\n';
+    switch (error) {
+      default:
+        assert(false);  // If we get here, add a new case to the switch.
+        [[fallthrough]];
+      case GL_INVALID_ENUM:
+        return unexpected(MakeErrorCode(kGLErrorInvalidEnum));
+      case GL_INVALID_OPERATION:
+        return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
       case GL_INVALID_VALUE:
         return unexpected(MakeErrorCode(kGLErrorInvalidValue));
     }

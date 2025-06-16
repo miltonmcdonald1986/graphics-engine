@@ -16,16 +16,22 @@
 #include "graphics-engine/shader.h"
 
 using enum ::graphics_engine::types::ErrorCode;
-using enum ::graphics_engine::types::GLBufferTarget;
-using enum ::graphics_engine::types::GLDataUsagePattern;
+using enum ::graphics_engine::gl_wrappers::GLBufferTarget;
+using enum ::graphics_engine::gl_wrappers::GLDataType;
+using enum ::graphics_engine::gl_wrappers::GLDataUsagePattern;
+using enum ::graphics_engine::gl_wrappers::GLDrawMode;
 
 using ::graphics_engine::error::CheckGLError;
 using ::graphics_engine::error::MakeErrorCode;
 using ::graphics_engine::gl_wrappers::BindBuffer;
 using ::graphics_engine::gl_wrappers::BindVertexArray;
 using ::graphics_engine::gl_wrappers::BufferData;
+using ::graphics_engine::gl_wrappers::DrawArrays;
+using ::graphics_engine::gl_wrappers::EnableVertexAttribArray;
 using ::graphics_engine::gl_wrappers::GenBuffers;
 using ::graphics_engine::gl_wrappers::GenVertexArrays;
+using ::graphics_engine::gl_wrappers::UseProgram;
+using ::graphics_engine::gl_wrappers::VertexAttribPointer;
 using ::graphics_engine::shader::CompileShader;
 using ::graphics_engine::shader::CreateAndLinkShaderProgram;
 using ::graphics_engine::shader::CreateShader;
@@ -102,30 +108,51 @@ void main()
     return std::unexpected(result.error());
   }
 
-  result = BindBuffer(Array, vbo);
+  result = BindBuffer(kArray, vbo);
   if (!result.has_value()) {
     assert(false);
     return std::unexpected(result.error());
   }
 
-  result = BufferData(Array, sizeof(vertices), vertices.data(), StaticDraw);
+  result = BufferData(kArray, sizeof(vertices), vertices.data(), kStaticDraw);
   if (!result.has_value()) {
     assert(false);
     return std::unexpected(result.error());
   }
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-  glEnableVertexAttribArray(0);
+  result = VertexAttribPointer(0, 3, kFloat, 0, 3 * sizeof(float), nullptr);
+  if (!result.has_value()) {
+    assert(false);
+    return std::unexpected(result.error());
+  }
+
+  result = EnableVertexAttribArray(0);
+  if (!result.has_value()) {
+    assert(false);
+    return std::unexpected(result.error());
+  }
 
   return {};
 }
 
 auto HelloTriangle::Render() const -> Expected<void> {
-  glUseProgram(this->shader_program_);
-  glBindVertexArray(
-      vao_);  // seeing as we only have a single VAO there's no need to bind it
-              // every time, but we'll do so to keep things a bit more organized
-  glDrawArrays(GL_TRIANGLES, 0, 3);
+  Expected<void> result = UseProgram(this->shader_program_);
+  if (!result.has_value()) {
+    assert(false);
+    return std::unexpected(result.error());
+  }
+
+  result = BindVertexArray(vao_);
+  if (!result.has_value()) {
+    assert(false);
+    return std::unexpected(result.error());
+  }
+
+  result = DrawArrays(kTriangles, 0, 3);
+  if (!result.has_value()) {
+    assert(false);
+    return std::unexpected(result.error());
+  }
 
   return {};
 }

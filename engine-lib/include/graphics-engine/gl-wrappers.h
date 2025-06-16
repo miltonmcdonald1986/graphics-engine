@@ -10,23 +10,88 @@
 
 namespace graphics_engine::gl_wrappers {
 
-DLLEXPORT [[nodiscard]] auto BindBuffer(
-    ::graphics_engine::types::GLBufferTarget target, unsigned int buffer)
-    -> ::graphics_engine::types::Expected<void>;
+enum class GLBufferTarget {
+  kArray,
+  kCopyRead,
+  kCopyWrite,
+  kElementArray,
+  kPixelPack,
+  kPixelUnpack,
+  kTexture,
+  kTransformFeedback,
+  kUniform
+};
+
+enum class GLDataType {
+  kByte,
+  kUnsignedByte,
+  kShort,
+  kUnsignedShort,
+  kInt,
+  kUnsignedInt,
+  kHalfFloat,
+  kFloat,
+  kDouble,
+  kInt_2_10_10_10_Rev,
+  kUnsignedInt_2_10_10_10_Rev
+};
+
+enum class GLDataUsagePattern {
+  kStreamDraw,
+  kStreamRead,
+  kStreamCopy,
+  kStaticDraw,
+  kStaticRead,
+  kStaticCopy,
+  kDynamicDraw,
+  kDynamicRead,
+  kDynamicCopy
+};
+
+enum class GLDrawMode {
+  kPoints,
+  kLineStrip,
+  kLineLoop,
+  kLines,
+  kLineStripAdjacency,
+  kLinesAdjacency,
+  kTriangleStrip,
+  kTriangleFan,
+  kTriangles,
+  kTriangleStripAdjacency,
+  kTrianglesAdjacency
+};
+
+DLLEXPORT [[nodiscard]] auto BindBuffer(GLBufferTarget target,
+                                        unsigned int buffer)
+    -> types::Expected<void>;
 
 DLLEXPORT [[nodiscard]] auto BindVertexArray(unsigned int array)
-    -> ::graphics_engine::types::Expected<void>;
+    -> types::Expected<void>;
 
-DLLEXPORT [[nodiscard]] auto BufferData(
-    ::graphics_engine::types::GLBufferTarget target, long long int size,
-    const void* data, ::graphics_engine::types::GLDataUsagePattern usage)
-    -> ::graphics_engine::types::Expected<void>;
+DLLEXPORT [[nodiscard]] auto BufferData(GLBufferTarget target,
+                                        long long int size, const void* data,
+                                        GLDataUsagePattern usage)
+    -> types::Expected<void>;
+
+DLLEXPORT [[nodiscard]] auto DrawArrays(GLDrawMode mode, int first, int count)
+    -> types::Expected<void>;
+
+DLLEXPORT [[nodiscard]] auto EnableVertexAttribArray(unsigned int index)
+    -> types::Expected<void>;
 
 DLLEXPORT [[nodiscard]] auto GenBuffers(int n, unsigned int* buffers)
-    -> ::graphics_engine::types::Expected<void>;
+    -> types::Expected<void>;
 
 DLLEXPORT [[nodiscard]] auto GenVertexArrays(int n, unsigned int* arrays)
-    -> ::graphics_engine::types::Expected<void>;
+    -> types::Expected<void>;
+
+DLLEXPORT [[nodiscard]] auto UseProgram(unsigned int program)
+    -> types::Expected<void>;
+
+DLLEXPORT [[nodiscard]] auto VertexAttribPointer(
+    unsigned int index, int size, GLDataType type, unsigned char normalized,
+    int stride, const void* pointer) -> types::Expected<void>;
 
 }  // namespace graphics_engine::gl_wrappers
 
