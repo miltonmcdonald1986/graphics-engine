@@ -14,6 +14,7 @@
 
 using enum graphics_engine::types::ErrorCode;
 using enum graphics_engine::gl_wrappers::GLBufferTarget;
+using enum graphics_engine::gl_wrappers::GLClearBit;
 using enum graphics_engine::gl_wrappers::GLDataType;
 using enum graphics_engine::gl_wrappers::GLDataUsagePattern;
 using enum graphics_engine::gl_wrappers::GLDrawMode;
@@ -23,8 +24,11 @@ using graphics_engine::types::Expected;
 
 using std::cerr;
 using std::is_same_v;
+using std::to_underlying;
 using std::unexpected;
 
+static_assert(is_same_v<GLbitfield, unsigned int>,
+              "GLbitfield and unsigned int are not the same type!");
 static_assert(is_same_v<GLboolean, unsigned char>,
               "GLboolean and unsigned char are not the same type!");
 static_assert(is_same_v<GLint, int>, "GLint and int are not the same type!");
@@ -132,7 +136,7 @@ auto ConvertGLDataUsagePattern(GLDataUsagePattern usage) -> GLenum {
 auto ConvertGLDrawMode(GLDrawMode mode) -> GLenum {
   switch (mode) {
     default:
-      assert(false); // If we get here, add a new case to the switch.
+      assert(false);  // If we get here, add a new case to the switch.
       [[fallthrough]];
     case kPoints:
       return GL_POINTS;
@@ -160,6 +164,28 @@ auto ConvertGLDrawMode(GLDrawMode mode) -> GLenum {
 }
 
 }  // namespace
+
+struct GLClearFlags::Impl {
+  std::bitset<kExpectedNumClearBits> flags;
+};
+
+GLClearFlags::GLClearFlags() : impl_(new Impl()) {}
+
+GLClearFlags::~GLClearFlags() { delete impl_; }
+
+auto GLClearFlags::Set(GLClearBit bit) -> GLClearFlags& {
+  impl_->flags.set(to_underlying(bit));
+  return *this;
+}
+
+auto GLClearFlags::Reset(GLClearBit bit) -> GLClearFlags& {
+  impl_->flags.reset(to_underlying(bit));
+  return *this;
+}
+
+auto GLClearFlags::Test(GLClearBit bit) const -> bool {
+  return impl_->flags.test(to_underlying(bit));
+}
 
 auto BindBuffer(GLBufferTarget target, unsigned int buffer) -> Expected<void> {
   GLenum gl_target = ConvertGLBufferTarget(target);
@@ -215,6 +241,32 @@ auto BufferData(GLBufferTarget target, long long int size, const void* data,
         return unexpected(MakeErrorCode(kGLErrorInvalidValue));
       case GL_OUT_OF_MEMORY:
         return unexpected(MakeErrorCode(kGLErrorOutOfMemory));
+    }
+  }
+
+  return {};
+}
+
+auto Clear(const GLClearFlags& flags) -> types::Expected<void> {
+  GLbitfield mask = 0;
+  if (flags.Test(kColor)) {
+    mask |= GL_COLOR_BUFFER_BIT;
+  }
+  if (flags.Test(kDepth)) {
+    mask |= GL_DEPTH_BUFFER_BIT;
+  }
+  if (flags.Test(kStencil)) {
+    mask |= GL_STENCIL_BUFFER_BIT;
+  }
+  glClear(mask);
+  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
+    cerr << "glClear failed with error code " << error << '\n';
+    switch (error) {
+      default:
+        assert(false);  // If we get here, add a new case to the switch.
+        [[fallthrough]];
+      case GL_INVALID_VALUE:
+        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
     }
   }
 

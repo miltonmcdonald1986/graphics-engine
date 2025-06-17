@@ -7,23 +7,29 @@
 
 #include "GLFW/glfw3.h"
 #include "graphics-engine/engine.h"
+#include "graphics-engine/gl-wrappers.h"
 #include "graphics-engine/hello-triangle.h"
 #include "graphics-engine/image.h"
 #include "graphics-engine/version.h"
 
 using ::glm::vec4;
 
-using ::graphics_engine::engine::ClearBuffers;
+using enum ::graphics_engine::gl_wrappers::GLClearBit;
+
 using ::graphics_engine::engine::InitializeEngine;
 using ::graphics_engine::engine::Render;
 using ::graphics_engine::engine::SetBackgroundColor;
-using ::graphics_engine::hello_triangle::HelloTriangle;
+using ::graphics_engine::gl_wrappers::GLClearFlags;
+using ::graphics_engine::gl_wrappers::Clear;
+using ::graphics_engine::hello_triangle::CreateHelloTriangleScene;
+using ::graphics_engine::hello_triangle::HelloTrianglePtr;
 using ::graphics_engine::image::CaptureScreenshot;
 using ::graphics_engine::types::Expected;
 using ::graphics_engine::version::GetEngineLibVersion;
 
 using ::std::cerr;
 using ::std::error_code;
+using ::std::to_underlying;
 
 auto main() -> int {
 #ifdef _WIN32
@@ -60,9 +66,8 @@ auto main() -> int {
     return -1;
   }
 
-  HelloTriangle scene;
-  auto expected_result = scene.Initialize();
-  if (!expected_result.has_value()) {
+  HelloTrianglePtr hello_triangle_scene = CreateHelloTriangleScene();
+  if (hello_triangle_scene == nullptr) {
     assert(false);
     return -1;
   }
@@ -70,17 +75,20 @@ auto main() -> int {
   const vec4 defaultBackgroundColor{0.2F, 0.3F, 0.3F, 1.0F};
   SetBackgroundColor(defaultBackgroundColor);
 
+  GLClearFlags flags;
+  flags.Set(kColor).Set(kDepth).Set(kStencil);
+
   while (glfwWindowShouldClose(window) == GLFW_FALSE) {
     assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
 
-    Expected<void> did_clear = ClearBuffers();
+    Expected<void> did_clear = Clear(flags);
     if (!did_clear.has_value()) {
       const error_code& err = did_clear.error();
       cerr << err.message() << '\n';
       return err.value();
     }
 
-    Expected<void> did_render = scene.Render();
+    Expected<void> did_render = hello_triangle_scene->Render();
     if (!did_render.has_value()) {
       const error_code& err = did_render.error();
       cerr << err.message() << '\n';

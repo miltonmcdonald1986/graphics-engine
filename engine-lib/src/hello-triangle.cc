@@ -157,4 +157,18 @@ auto HelloTriangle::Render() const -> Expected<void> {
   return {};
 }
 
+auto CreateHelloTriangleScene() -> HelloTrianglePtr {
+  HelloTrianglePtr hello_triangle = std::make_unique<HelloTriangle>();
+  if (!hello_triangle) {
+    return nullptr;
+  }
+
+  Expected<void> result = hello_triangle->Initialize();
+  if (!result.has_value()) {
+    return nullptr;
+  }
+
+  return hello_triangle;
+}
+
 }  // namespace graphics_engine::hello_triangle

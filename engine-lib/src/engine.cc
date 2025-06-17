@@ -6,6 +6,7 @@
 
 #include "error.h"
 #include "glad/glad.h"
+#include "graphics-engine/gl-wrappers.h"
 
 using ::glm::vec4;
 
@@ -18,13 +19,6 @@ using ::std::unexpected;
 
 namespace graphics_engine::engine {
 
-auto ClearBuffers() -> Expected<void> {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  CheckGLError();
-
-  return {};
-}
-
 auto InitializeEngine() -> Expected<void> {
   if (gladLoadGL() == 0) {
     return unexpected(MakeErrorCode(kEngineInitializationFailed));
@@ -34,8 +28,15 @@ auto InitializeEngine() -> Expected<void> {
 }
 
 auto Render() -> Expected<void> {
-  glClear(GL_COLOR_BUFFER_BIT);
-  CheckGLError();
+  //std::vector<ScenePtr> scenes = scene_manager_.GetActiveScenes();
+  //for (ScenePtr scene : scenes) {
+  //  Expected<void> result = scene->Render();
+  //  if (!result.has_value()) {
+  //    assert(false);
+  //    return unexpected(result.error());
+  //  }
+  //}
+
   return {};
 }
 

@@ -5,12 +5,15 @@
 #ifndef ENGINE_LIB_GL_WRAPPERS_H_
 #define ENGINE_LIB_GL_WRAPPERS_H_
 
+#include <bitset>
+#include <memory>
+
 #include "dll-export.h"
 #include "types.h"
 
 namespace graphics_engine::gl_wrappers {
 
-enum class GLBufferTarget {
+enum class GLBufferTarget : std::uint8_t {
   kArray,
   kCopyRead,
   kCopyWrite,
@@ -22,7 +25,33 @@ enum class GLBufferTarget {
   kUniform
 };
 
-enum class GLDataType {
+enum class GLClearBit { kColor, kDepth, kStencil, kNumBits };
+constexpr int kExpectedNumClearBits = 3;
+static_assert(
+    std::to_underlying(GLClearBit::kNumBits) == kExpectedNumClearBits,
+    "Fix value of kExpectedNumClearBits to match GLClearBit definition!");
+
+class DLLEXPORT GLClearFlags 
+{
+ public:
+  GLClearFlags();
+  ~GLClearFlags();
+
+  GLClearFlags(const GLClearFlags&) = delete;
+  GLClearFlags& operator=(const GLClearFlags&) = delete;
+  GLClearFlags(GLClearFlags&&) = delete;
+  GLClearFlags& operator=(GLClearFlags&&) = delete;
+  
+  auto Set(GLClearBit bit) -> GLClearFlags&;
+  auto Reset(GLClearBit bit) -> GLClearFlags&;
+  auto Test(GLClearBit bit) const -> bool;
+
+ private:
+  struct Impl;
+  Impl* impl_;
+};
+
+enum class GLDataType : std::uint8_t {
   kByte,
   kUnsignedByte,
   kShort,
@@ -36,7 +65,7 @@ enum class GLDataType {
   kUnsignedInt_2_10_10_10_Rev
 };
 
-enum class GLDataUsagePattern {
+enum class GLDataUsagePattern : std::uint8_t {
   kStreamDraw,
   kStreamRead,
   kStreamCopy,
@@ -48,7 +77,7 @@ enum class GLDataUsagePattern {
   kDynamicCopy
 };
 
-enum class GLDrawMode {
+enum class GLDrawMode : std::uint8_t {
   kPoints,
   kLineStrip,
   kLineLoop,
@@ -73,6 +102,8 @@ DLLEXPORT [[nodiscard]] auto BufferData(GLBufferTarget target,
                                         long long int size, const void* data,
                                         GLDataUsagePattern usage)
     -> types::Expected<void>;
+
+DLLEXPORT [[nodiscard]] auto Clear(const GLClearFlags& flags) -> types::Expected<void>;
 
 DLLEXPORT [[nodiscard]] auto DrawArrays(GLDrawMode mode, int first, int count)
     -> types::Expected<void>;

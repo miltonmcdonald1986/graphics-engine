@@ -14,7 +14,6 @@
 
 using ::glm::vec4;
 
-using ::graphics_engine::engine::ClearBuffers;
 using ::graphics_engine::engine::InitializeEngine;
 using ::graphics_engine::engine::Render;
 using ::graphics_engine::engine::SetBackgroundColor;
@@ -154,11 +153,6 @@ TEST_F(EngineTestFixture, SetBackgroundColor) {
   Expected<bool> expected_comparison = AreIdentical(test_screenshot, pngPath);
   ASSERT_TRUE(expected_comparison.has_value());
   ASSERT_TRUE(expected_comparison.value());
-}
-
-TEST_F(EngineTestFixture, ClearBuffersWorks) { 
-  Expected<void> result{ClearBuffers()};
-  ASSERT_TRUE(result.has_value());
 }
 
 //TEST_F(EngineTestFixture, Sandbox) {
