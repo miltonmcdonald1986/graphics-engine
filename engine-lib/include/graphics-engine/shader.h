@@ -8,26 +8,10 @@
 #include <vector>
 
 #include "dll-export.h"
+#include "gl-wrappers.h"
 #include "types.h"
 
 namespace graphics_engine::shader {
-
-/// @brief Available shader types.
-enum class ShaderType : std::uint8_t {
-  kFragment,
-  kGeometry,
-  kVertex,
-  kNumShaderTypes
-};
-
-/// @brief Wrapper around glAttachShader with error handling.
-/// @param program Specifies the program object to which a shader object will be
-/// attached.
-/// @param shader Specifies the shader object that is to be attached.
-/// @return void on success, error on failure.
-DLLEXPORT [[nodiscard]] auto AttachShader(unsigned int program,
-                                          unsigned int shader)
-    -> ::graphics_engine::types::Expected<void>;
 
 /// @brief Replaces the source code in a shader object and compiles the shader
 /// object.
@@ -46,8 +30,8 @@ DLLEXPORT [[nodiscard]] auto CompileShader(unsigned int shader_id,
 /// loaded into the shader.
 /// @return an identifier for the shader on success, error on failure.
 DLLEXPORT [[nodiscard]] auto CreateAndCompileShader(
-    ShaderType type, const std::string& source_code)
-    -> ::graphics_engine::types::Expected<unsigned int>;
+    gl_wrappers::GLShaderType type, const std::string& source_code)
+    -> types::Expected<unsigned int>;
 
 /// @brief Create a shader program, attach the given shaders, and link the
 /// program.
@@ -60,13 +44,6 @@ DLLEXPORT [[nodiscard]] auto CreateAndLinkShaderProgram(
 /// @brief Wrapper around glCreateProgram
 /// @return a non-zero value by which the created program can be referenced.
 DLLEXPORT [[nodiscard]] auto CreateProgram()
-    -> ::graphics_engine::types::Expected<unsigned int>;
-
-/// @brief Creates an empty shader object and returns a non-zero value by which
-/// it can be referenced.
-/// @param type Specifies the type of shader to be created
-/// @return An identifier for the shader on success, error on failure.
-DLLEXPORT [[nodiscard]] auto CreateShader(ShaderType type)
     -> ::graphics_engine::types::Expected<unsigned int>;
 
 /// @brief Wrapper around glDeleteShader with error handling.

@@ -31,8 +31,7 @@ static_assert(
     std::to_underlying(GLClearBit::kNumBits) == kExpectedNumClearBits,
     "Fix value of kExpectedNumClearBits to match GLClearBit definition!");
 
-class DLLEXPORT GLClearFlags 
-{
+class DLLEXPORT GLClearFlags {
  public:
   GLClearFlags();
   ~GLClearFlags();
@@ -41,7 +40,7 @@ class DLLEXPORT GLClearFlags
   GLClearFlags& operator=(const GLClearFlags&) = delete;
   GLClearFlags(GLClearFlags&&) = delete;
   GLClearFlags& operator=(GLClearFlags&&) = delete;
-  
+
   auto Set(GLClearBit bit) -> GLClearFlags&;
   auto Reset(GLClearBit bit) -> GLClearFlags&;
   auto Test(GLClearBit bit) const -> bool;
@@ -91,6 +90,12 @@ enum class GLDrawMode : std::uint8_t {
   kTrianglesAdjacency
 };
 
+enum class GLShaderType : std::uint8_t { kFragment, kGeometry, kVertex };
+
+DLLEXPORT [[nodiscard]] auto AttachShader(unsigned int program,
+                                          unsigned int shader)
+    -> types::Expected<void>;
+
 DLLEXPORT [[nodiscard]] auto BindBuffer(GLBufferTarget target,
                                         unsigned int buffer)
     -> types::Expected<void>;
@@ -103,7 +108,11 @@ DLLEXPORT [[nodiscard]] auto BufferData(GLBufferTarget target,
                                         GLDataUsagePattern usage)
     -> types::Expected<void>;
 
-DLLEXPORT [[nodiscard]] auto Clear(const GLClearFlags& flags) -> types::Expected<void>;
+DLLEXPORT [[nodiscard]] auto Clear(const GLClearFlags& flags)
+    -> types::Expected<void>;
+
+DLLEXPORT [[nodiscard]] auto CreateShader(GLShaderType shader_type)
+    -> types::Expected<unsigned int>;
 
 DLLEXPORT [[nodiscard]] auto DrawArrays(GLDrawMode mode, int first, int count)
     -> types::Expected<void>;

@@ -18,6 +18,7 @@ using enum graphics_engine::gl_wrappers::GLClearBit;
 using enum graphics_engine::gl_wrappers::GLDataType;
 using enum graphics_engine::gl_wrappers::GLDataUsagePattern;
 using enum graphics_engine::gl_wrappers::GLDrawMode;
+using enum graphics_engine::gl_wrappers::GLShaderType;
 
 using graphics_engine::error::MakeErrorCode;
 using graphics_engine::types::Expected;
@@ -163,6 +164,22 @@ auto ConvertGLDrawMode(GLDrawMode mode) -> GLenum {
   }
 }
 
+auto ConvertGLShaderType(GLShaderType shader_type) -> GLenum {
+  switch (shader_type) {
+    default:
+      std::cerr << "ConvertGLShaderType failed with underlying value "
+                << static_cast<int>(shader_type) << '\n';
+      assert(false);  // If we get here, add a new case to the switch.
+      [[fallthrough]];
+    case kFragment:
+      return GL_FRAGMENT_SHADER;
+    case kGeometry:
+      return GL_GEOMETRY_SHADER;
+    case kVertex:
+      return GL_VERTEX_SHADER;
+  }
+}
+
 }  // namespace
 
 struct GLClearFlags::Impl {
@@ -185,6 +202,24 @@ auto GLClearFlags::Reset(GLClearBit bit) -> GLClearFlags& {
 
 auto GLClearFlags::Test(GLClearBit bit) const -> bool {
   return impl_->flags.test(to_underlying(bit));
+}
+
+auto AttachShader(unsigned int program, unsigned int shader) -> Expected<void> {
+  glAttachShader(program, shader);
+  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
+    cerr << "glAttachShader failed with error code " << error << '\n';
+    switch (error) {
+      default:
+        assert(false);  // If we get here, add a new case to the switch.
+        [[fallthrough]];
+      case GL_INVALID_VALUE:
+        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
+      case GL_INVALID_OPERATION:
+        return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
+    }
+  }
+
+  return {};
 }
 
 auto BindBuffer(GLBufferTarget target, unsigned int buffer) -> Expected<void> {
@@ -271,6 +306,24 @@ auto Clear(const GLClearFlags& flags) -> types::Expected<void> {
   }
 
   return {};
+}
+
+auto CreateShader(GLShaderType shader_type) -> Expected<unsigned int> {
+  GLenum gl_shader_type = ConvertGLShaderType(shader_type);
+  GLuint shader = glCreateShader(gl_shader_type);
+  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
+    cerr << "glCreateShader failed with error code " << error << '\n';
+    switch (error) {
+      default:
+        assert(false);  // If we get here, add a new case to the switch.
+        [[fallthrough]];
+      case GL_INVALID_ENUM:
+        return unexpected(MakeErrorCode(kGLErrorInvalidEnum));
+    }
+  }
+
+  assert(shader > 0U);
+  return shader;
 }
 
 auto DrawArrays(GLDrawMode mode, int first, int count) -> Expected<void> {

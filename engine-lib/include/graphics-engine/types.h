@@ -13,7 +13,7 @@ namespace graphics_engine::types {
 
 enum class ErrorCode : std::uint8_t {
   // kNoError = 0,
-  kEngineInitializationFailed = 1,
+  kGladLoadGL = 1,
   kGLErrorInvalidEnum,
   kGLErrorInvalidOperation,
   kGLErrorInvalidValue,

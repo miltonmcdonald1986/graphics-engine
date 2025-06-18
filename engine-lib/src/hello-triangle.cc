@@ -15,34 +15,35 @@
 #include "graphics-engine/gl-wrappers.h"
 #include "graphics-engine/shader.h"
 
-using enum ::graphics_engine::types::ErrorCode;
-using enum ::graphics_engine::gl_wrappers::GLBufferTarget;
-using enum ::graphics_engine::gl_wrappers::GLDataType;
-using enum ::graphics_engine::gl_wrappers::GLDataUsagePattern;
-using enum ::graphics_engine::gl_wrappers::GLDrawMode;
+using enum graphics_engine::types::ErrorCode;
+using enum graphics_engine::gl_wrappers::GLBufferTarget;
+using enum graphics_engine::gl_wrappers::GLDataType;
+using enum graphics_engine::gl_wrappers::GLDataUsagePattern;
+using enum graphics_engine::gl_wrappers::GLDrawMode;
+using enum graphics_engine::gl_wrappers::GLShaderType;
 
-using ::graphics_engine::error::CheckGLError;
-using ::graphics_engine::error::MakeErrorCode;
-using ::graphics_engine::gl_wrappers::BindBuffer;
-using ::graphics_engine::gl_wrappers::BindVertexArray;
-using ::graphics_engine::gl_wrappers::BufferData;
-using ::graphics_engine::gl_wrappers::DrawArrays;
-using ::graphics_engine::gl_wrappers::EnableVertexAttribArray;
-using ::graphics_engine::gl_wrappers::GenBuffers;
-using ::graphics_engine::gl_wrappers::GenVertexArrays;
-using ::graphics_engine::gl_wrappers::UseProgram;
-using ::graphics_engine::gl_wrappers::VertexAttribPointer;
-using ::graphics_engine::shader::CompileShader;
-using ::graphics_engine::shader::CreateAndLinkShaderProgram;
-using ::graphics_engine::shader::CreateShader;
-using ::graphics_engine::shader::DeleteShader;
-using enum ::graphics_engine::shader::ShaderType;
-using ::graphics_engine::types::Expected;
+using graphics_engine::error::CheckGLError;
+using graphics_engine::error::MakeErrorCode;
+using graphics_engine::gl_wrappers::BindBuffer;
+using graphics_engine::gl_wrappers::BindVertexArray;
+using graphics_engine::gl_wrappers::BufferData;
+using graphics_engine::gl_wrappers::CreateShader;
+using graphics_engine::gl_wrappers::DrawArrays;
+using graphics_engine::gl_wrappers::EnableVertexAttribArray;
+using graphics_engine::gl_wrappers::GenBuffers;
+using graphics_engine::gl_wrappers::GenVertexArrays;
+using graphics_engine::gl_wrappers::UseProgram;
+using graphics_engine::gl_wrappers::VertexAttribPointer;
+using graphics_engine::shader::CompileShader;
+using graphics_engine::shader::CreateAndCompileShader;
+using graphics_engine::shader::CreateAndLinkShaderProgram;
+using graphics_engine::shader::DeleteShader;
+using graphics_engine::types::Expected;
 
-using ::std::cerr;
-using ::std::is_same_v;
-using ::std::string;
-using ::std::unexpected;
+using std::cerr;
+using std::is_same_v;
+using std::string;
+using std::unexpected;
 
 static_assert(is_same_v<GLchar, char>,
               "GLchar and char are not the same type!");

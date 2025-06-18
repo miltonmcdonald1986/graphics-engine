@@ -109,7 +109,7 @@ TEST(EngineTests, InitializeEngineNoContext) {
   ASSERT_FALSE(result.has_value());
   ASSERT_STREQ(result.error().category().name(), "graphics_engine::error");
   ASSERT_EQ(result.error().value(), 1);
-  ASSERT_EQ(result.error().message(), "Engine Initialization failed.");
+  ASSERT_EQ(result.error().message(), "glad failed to load OpenGL.");
 }
 
 TEST_F(EngineTestFixture, CaptureScreenshotFailsIfItCantWriteTheFile) {

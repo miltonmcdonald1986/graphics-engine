@@ -31,8 +31,8 @@ class ErrorCategory : public error_category {
       default:
         assert(false);  // If we get here, add a new case to the switch
         [[fallthrough]];
-      case kEngineInitializationFailed:
-        return "Engine Initialization failed.";
+      case kGladLoadGL:
+        return "glad failed to load OpenGL.";
       case kGLErrorInvalidOperation:
         return "OpenGL Error: Invalid Operation.";
       case kGLErrorInvalidValue:

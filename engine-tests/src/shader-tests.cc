@@ -4,26 +4,29 @@
 
 #include "GLFW/glfw3.h"
 #include "graphics-engine/engine.h"
+#include "graphics-engine/gl-wrappers.h"
 #include "graphics-engine/hello-triangle.h"
 #include "graphics-engine/shader.h"
 #include "gtest/gtest.h"
 
-using ::graphics_engine::engine::InitializeEngine;
-using ::graphics_engine::shader::AttachShader;
-using ::graphics_engine::shader::CompileShader;
-using ::graphics_engine::shader::CreateAndLinkShaderProgram;
-using ::graphics_engine::shader::CreateProgram;
-using ::graphics_engine::shader::CreateShader;
-using ::graphics_engine::shader::ShaderSource;
-using ::graphics_engine::shader::ShaderType;
-using enum ::graphics_engine::shader::ShaderType;
-using enum ::graphics_engine::types::ErrorCode;
-using ::graphics_engine::types::Expected;
+using enum graphics_engine::gl_wrappers::GLShaderType;
+using enum graphics_engine::types::ErrorCode;
 
-using ::std::string;
-using ::std::to_underlying;
+using graphics_engine::engine::InitializeEngine;
+using graphics_engine::gl_wrappers::AttachShader;
+using graphics_engine::gl_wrappers::CreateShader;
+using graphics_engine::gl_wrappers::GLShaderType;
+using graphics_engine::shader::CompileShader;
+using graphics_engine::shader::CreateAndCompileShader;
+using graphics_engine::shader::CreateAndLinkShaderProgram;
+using graphics_engine::shader::CreateProgram;
+using graphics_engine::shader::ShaderSource;
+using graphics_engine::types::Expected;
 
-using ::testing::Test;
+using std::string;
+using std::to_underlying;
+
+using testing::Test;
 
 namespace graphics_engine_tests::shader_tests {
 
@@ -76,7 +79,6 @@ struct ShaderTestFixture : public Test {
     int error = glfwGetError(nullptr);
     ASSERT_EQ(error, GLFW_NO_ERROR);
   }
-
 };
 
 TEST_F(ShaderTestFixture, CompileShaderWorksWithGoodVertexShaderSourceCode) {
@@ -118,35 +120,15 @@ TEST_F(ShaderTestFixture, CreateShaderWorksWithVertexShaderType) {
   ASSERT_TRUE(create_shader_result.has_value());
 }
 
-TEST_F(ShaderTestFixture, CreateShaderFailsWithCounter) {
-  Expected<unsigned int> create_shader_result = CreateShader(kNumShaderTypes);
-  ASSERT_FALSE(create_shader_result.has_value());
-  ASSERT_STREQ(create_shader_result.error().message().c_str(), "Shader Error.");
-  ASSERT_EQ(create_shader_result.error().value(),
-            static_cast<int>(kShaderError));
-}
-
 TEST_F(ShaderTestFixture, CreateShaderFailsWithJunk) {
-  Expected<unsigned int> create_shader_result =
-      CreateShader(static_cast<ShaderType>(42));
-  ASSERT_FALSE(create_shader_result.has_value());
-  ASSERT_STREQ(create_shader_result.error().message().c_str(), "Shader Error.");
-  ASSERT_EQ(create_shader_result.error().value(),
-            static_cast<int>(kShaderError));
+  ASSERT_DEATH((void)CreateShader(static_cast<GLShaderType>(42)),
+               "ConvertGLShaderType failed with underlying value 42");
 }
 
 TEST_F(ShaderTestFixture, CreateAndCompileShaderWorksWithGoodData) {
   Expected<unsigned int> shader_id{
       CreateAndCompileShader(kVertex, basic_vs_src)};
   ASSERT_TRUE(shader_id.has_value());
-}
-
-TEST_F(ShaderTestFixture, CreateAndCompileShaderFailsWithCounter) {
-  Expected<unsigned int> shader_id{
-      CreateAndCompileShader(kNumShaderTypes, basic_vs_src)};
-  ASSERT_FALSE(shader_id.has_value());
-  ASSERT_STREQ(shader_id.error().message().c_str(), "Shader Error.");
-  ASSERT_EQ(shader_id.error().value(), static_cast<int>(kShaderError));
 }
 
 TEST_F(ShaderTestFixture, CreateAndCompileShaderFailsWithBadSourceCode) {
@@ -170,7 +152,7 @@ TEST_F(ShaderTestFixture, CreateAndLinkShaderProgramWorksWithGoodData) {
 }
 
 TEST_F(ShaderTestFixture, CreateAndLinkShaderProgramFailsWithInvalidData) {
-  Expected<unsigned int> program_id{CreateAndLinkShaderProgram({ 0 })};
+  Expected<unsigned int> program_id{CreateAndLinkShaderProgram({0})};
   ASSERT_FALSE(program_id.has_value());
   ASSERT_STREQ(program_id.error().message().c_str(), "Shader Error.");
   ASSERT_EQ(program_id.error().value(), to_underlying(kShaderError));

@@ -13,6 +13,7 @@ namespace graphics_engine::hello_triangle {
 
 class HelloTriangle : public scene::Scene {
  public:
+  ~HelloTriangle() override = default;
   [[nodiscard]] auto Initialize() -> types::Expected<void>;
   [[nodiscard]] auto Render() const -> types::Expected<void> override;
 

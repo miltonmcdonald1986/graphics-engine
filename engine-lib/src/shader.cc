@@ -15,26 +15,28 @@
 #include "error.h"
 #include "glad/glad.h"
 
-using enum ::graphics_engine::shader::ShaderType;
-using enum ::graphics_engine::types::ErrorCode;
+using enum graphics_engine::gl_wrappers::GLShaderType;
+using enum graphics_engine::types::ErrorCode;
 
-using ::graphics_engine::error::CheckGLError;
-using ::graphics_engine::error::MakeErrorCode;
-using ::graphics_engine::types::Expected;
+using graphics_engine::error::CheckGLError;
+using graphics_engine::error::MakeErrorCode;
+using graphics_engine::gl_wrappers::AttachShader;
+using graphics_engine::gl_wrappers::GLShaderType;
+using graphics_engine::types::Expected;
 
-using ::std::cerr;
-using ::std::exception;
-using ::std::format;
-using ::std::is_same_v;
-using ::std::runtime_error;
-using ::std::string;
-using ::std::to_underlying;
-using ::std::unexpected;
-using ::std::unordered_map;
-using ::std::vector;
-using ::std::ranges::contains;
-using ::std::ranges::for_each;
-using ::std::views::keys;
+using std::cerr;
+using std::exception;
+using std::format;
+using std::is_same_v;
+using std::runtime_error;
+using std::string;
+using std::to_underlying;
+using std::unexpected;
+using std::unordered_map;
+using std::vector;
+using std::ranges::contains;
+using std::ranges::for_each;
+using std::views::keys;
 
 static_assert(is_same_v<GLchar, char>,
               "GLchar and char are not the same type!");
@@ -45,59 +47,6 @@ static_assert(is_same_v<GLuint, unsigned int>,
               "GLuint and unsigned int are not the same type!");
 
 namespace graphics_engine::shader {
-
-namespace {
-
-constexpr int kExpectedCount = 3;
-static_assert(to_underlying(kNumShaderTypes) == kExpectedCount,
-              "Add a new pair to kShaderTypeMap!");
-
-[[nodiscard]] auto GetShaderTypeMap()
-    -> const unordered_map<ShaderType, GLenum>& {
-  static const unordered_map<ShaderType, GLenum> kShaderTypeMap{
-      {kFragment, GL_FRAGMENT_SHADER},
-      {kGeometry, GL_GEOMETRY_SHADER},
-      {kVertex, GL_VERTEX_SHADER}};
-
-  return kShaderTypeMap;
-}
-
-[[nodiscard]] auto ConvertShaderType(ShaderType type) -> Expected<GLenum> {
-  if (type == kNumShaderTypes) {
-    cerr << "kNumShaderTypes is not a valid input arg.\n";
-    return unexpected(MakeErrorCode(kShaderError));
-  }
-
-  GLenum shader_type{};
-  try {
-    shader_type = GetShaderTypeMap().at(type);
-  } catch (const std::exception& exc) {
-    cerr << "Caught std::exception: " << exc.what() << '\n';
-    return unexpected(MakeErrorCode(kShaderError));
-  }
-
-  return shader_type;
-}
-
-}  // namespace
-
-auto AttachShader(unsigned int program, unsigned int shader) -> Expected<void> {
-  glAttachShader(program, shader);
-  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
-    cerr << "glAttachShader failed with error code " << error << '\n';
-    switch (error) {
-      default:
-        assert(false);  // If we get here, add a new case to the switch.
-        [[fallthrough]];
-      case GL_INVALID_VALUE:
-        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
-      case GL_INVALID_OPERATION:
-        return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
-    }
-  }
-
-  return {};
-}
 
 auto CompileShader(unsigned int shader_id, const string& source_code)
     -> Expected<void> {
@@ -135,7 +84,7 @@ auto CompileShader(unsigned int shader_id, const string& source_code)
   return {};
 }
 
-auto CreateAndCompileShader(ShaderType type, const string& source_code)
+auto CreateAndCompileShader(gl_wrappers::GLShaderType type, const string& source_code)
     -> Expected<unsigned int> {
   Expected<GLuint> expected_id = CreateShader(type);
   if (!expected_id.has_value()) {
@@ -185,21 +134,6 @@ auto CreateProgram() -> Expected<unsigned int> {
   assert(program_id > 0U);
 
   return program_id;
-}
-
-auto CreateShader(ShaderType type) -> Expected<unsigned int> {
-  Expected<GLenum> shader_type{ConvertShaderType(type)};
-  if (!shader_type) {
-    cerr << "ConvertShaderType failed to convert ShaderType with value "
-         << to_underlying(type) << '\n';
-    return unexpected(MakeErrorCode(kShaderError));
-  }
-
-  GLuint shader{glCreateShader(*shader_type)};
-  CheckGLError();
-  assert(shader > 0U);
-
-  return shader;
 }
 
 DLLEXPORT [[nodiscard]] auto DeleteShader(unsigned int shader_id)

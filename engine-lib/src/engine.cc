@@ -21,21 +21,15 @@ namespace graphics_engine::engine {
 
 auto InitializeEngine() -> Expected<void> {
   if (gladLoadGL() == 0) {
-    return unexpected(MakeErrorCode(kEngineInitializationFailed));
+    return unexpected(MakeErrorCode(kGladLoadGL));
   }
 
   return {};
 }
 
 auto Render() -> Expected<void> {
-  //std::vector<ScenePtr> scenes = scene_manager_.GetActiveScenes();
-  //for (ScenePtr scene : scenes) {
-  //  Expected<void> result = scene->Render();
-  //  if (!result.has_value()) {
-  //    assert(false);
-  //    return unexpected(result.error());
-  //  }
-  //}
+  glClear(GL_COLOR_BUFFER_BIT);
+  assert(glGetError() == GL_NO_ERROR);
 
   return {};
 }
