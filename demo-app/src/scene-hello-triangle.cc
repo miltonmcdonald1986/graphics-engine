@@ -2,55 +2,37 @@
 // This source code is licensed under the MIT License. See LICENSE file in the
 // project root for details.
 
-#include "graphics-engine/hello-triangle.h"
+#include "scene-hello-triangle.h"
 
-#include <algorithm>
+#include <array>
 #include <cassert>
-#include <iostream>
-#include <ranges>
-#include <unordered_map>
 
-#include "error.h"
-#include "glad/glad.h"
-#include "graphics-engine/gl-wrappers.h"
+#include "graphics-engine/gl-types.h"
 #include "graphics-engine/shader.h"
 
-using enum graphics_engine::types::ErrorCode;
 using enum graphics_engine::gl_types::GLBufferTarget;
 using enum graphics_engine::gl_types::GLDataType;
 using enum graphics_engine::gl_types::GLDataUsagePattern;
 using enum graphics_engine::gl_types::GLDrawMode;
 using enum graphics_engine::gl_types::GLShaderType;
 
-using graphics_engine::error::CheckGLError;
-using graphics_engine::error::MakeErrorCode;
 using graphics_engine::gl_wrappers::BindBuffer;
 using graphics_engine::gl_wrappers::BindVertexArray;
 using graphics_engine::gl_wrappers::BufferData;
-using graphics_engine::gl_wrappers::CreateShader;
 using graphics_engine::gl_wrappers::DrawArrays;
 using graphics_engine::gl_wrappers::EnableVertexAttribArray;
 using graphics_engine::gl_wrappers::GenBuffers;
 using graphics_engine::gl_wrappers::GenVertexArrays;
 using graphics_engine::gl_wrappers::UseProgram;
 using graphics_engine::gl_wrappers::VertexAttribPointer;
-using graphics_engine::shader::CompileShader;
 using graphics_engine::shader::CreateAndCompileShader;
 using graphics_engine::shader::CreateAndLinkShaderProgram;
 using graphics_engine::shader::DeleteShader;
 using graphics_engine::types::Expected;
 
-using std::cerr;
-using std::is_same_v;
 using std::string;
-using std::unexpected;
 
-static_assert(is_same_v<GLchar, char>,
-              "GLchar and char are not the same type!");
-static_assert(is_same_v<GLuint, unsigned int>,
-              "GLuint and unsigned int are not the same type!");
-
-namespace graphics_engine::hello_triangle {
+namespace demo_app::scene_hello_triangle {
 
 auto HelloTriangle::Initialize() -> Expected<void> {
   const string vs_src = R"(#version 330 core
@@ -67,10 +49,10 @@ void main()
   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
 })";
 
-  Expected<GLuint> vs_id = CreateAndCompileShader(kVertex, vs_src);
+  Expected<unsigned int> vs_id = CreateAndCompileShader(kVertex, vs_src);
   assert(vs_id.has_value());
 
-  Expected<GLuint> fs_id = CreateAndCompileShader(kFragment, fs_src);
+  Expected<unsigned int> fs_id = CreateAndCompileShader(kFragment, fs_src);
   assert(fs_id.has_value());
 
   auto program_id = CreateAndLinkShaderProgram({*vs_id, *fs_id});
@@ -102,7 +84,7 @@ void main()
     return std::unexpected(result.error());
   }
 
-  GLuint vbo{};
+  unsigned int vbo{};
   result = GenBuffers(1, &vbo);
   if (!result.has_value()) {
     assert(false);
@@ -159,7 +141,7 @@ auto HelloTriangle::Render() const -> Expected<void> {
 }
 
 auto CreateHelloTriangleScene() -> HelloTrianglePtr {
-  HelloTrianglePtr hello_triangle = std::make_unique<HelloTriangle>();
+  HelloTrianglePtr hello_triangle(new HelloTriangle());
   Expected<void> result = hello_triangle->Initialize();
   if (!result.has_value()) {
     return nullptr;

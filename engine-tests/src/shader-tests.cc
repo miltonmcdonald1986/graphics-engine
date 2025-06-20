@@ -9,13 +9,13 @@
 #include "graphics-engine/shader.h"
 #include "gtest/gtest.h"
 
-using enum graphics_engine::gl_wrappers::GLShaderType;
+using enum graphics_engine::gl_types::GLShaderType;
 using enum graphics_engine::types::ErrorCode;
 
 using graphics_engine::engine::InitializeEngine;
 using graphics_engine::gl_wrappers::AttachShader;
 using graphics_engine::gl_wrappers::CreateShader;
-using graphics_engine::gl_wrappers::GLShaderType;
+using graphics_engine::gl_types::GLShaderType;
 using graphics_engine::shader::CompileShader;
 using graphics_engine::shader::CreateAndCompileShader;
 using graphics_engine::shader::CreateAndLinkShaderProgram;

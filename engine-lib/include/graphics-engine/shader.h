@@ -30,7 +30,7 @@ DLLEXPORT [[nodiscard]] auto CompileShader(unsigned int shader_id,
 /// loaded into the shader.
 /// @return an identifier for the shader on success, error on failure.
 DLLEXPORT [[nodiscard]] auto CreateAndCompileShader(
-    gl_wrappers::GLShaderType type, const std::string& source_code)
+    gl_types::GLShaderType type, const std::string& source_code)
     -> types::Expected<unsigned int>;
 
 /// @brief Create a shader program, attach the given shaders, and link the

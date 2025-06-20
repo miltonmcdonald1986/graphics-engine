@@ -15,13 +15,14 @@
 #include "error.h"
 #include "glad/glad.h"
 
-using enum graphics_engine::gl_wrappers::GLShaderType;
+using enum graphics_engine::gl_types::GLShaderType;
 using enum graphics_engine::types::ErrorCode;
 
 using graphics_engine::error::CheckGLError;
 using graphics_engine::error::MakeErrorCode;
+using graphics_engine::gl_types::GLShaderType;
 using graphics_engine::gl_wrappers::AttachShader;
-using graphics_engine::gl_wrappers::GLShaderType;
+using graphics_engine::gl_wrappers::CreateShader;
 using graphics_engine::types::Expected;
 
 using std::cerr;
@@ -84,7 +85,8 @@ auto CompileShader(unsigned int shader_id, const string& source_code)
   return {};
 }
 
-auto CreateAndCompileShader(gl_wrappers::GLShaderType type, const string& source_code)
+auto CreateAndCompileShader(gl_types::GLShaderType type,
+                            const string& source_code)
     -> Expected<unsigned int> {
   Expected<GLuint> expected_id = CreateShader(type);
   if (!expected_id.has_value()) {

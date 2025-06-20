@@ -10,17 +10,24 @@
 
 #include "error.h"
 #include "glad/glad.h"
+#include "graphics-engine/gl-types.h"
 #include "graphics-engine/types.h"
 
 using enum graphics_engine::types::ErrorCode;
-using enum graphics_engine::gl_wrappers::GLBufferTarget;
-using enum graphics_engine::gl_wrappers::GLClearBit;
-using enum graphics_engine::gl_wrappers::GLDataType;
-using enum graphics_engine::gl_wrappers::GLDataUsagePattern;
-using enum graphics_engine::gl_wrappers::GLDrawMode;
-using enum graphics_engine::gl_wrappers::GLShaderType;
+using enum graphics_engine::gl_types::GLBufferTarget;
+using enum graphics_engine::gl_types::GLClearBit;
+using enum graphics_engine::gl_types::GLDataType;
+using enum graphics_engine::gl_types::GLDataUsagePattern;
+using enum graphics_engine::gl_types::GLDrawMode;
+using enum graphics_engine::gl_types::GLShaderType;
 
 using graphics_engine::error::MakeErrorCode;
+using graphics_engine::gl_types::GLBufferTarget;
+using graphics_engine::gl_types::GLDataType;
+using graphics_engine::gl_types::GLDataUsagePattern;
+using graphics_engine::gl_types::GLDrawMode;
+using graphics_engine::gl_types::GLShaderType;
+using graphics_engine::i_gl_clear_flags::IGLClearFlags;
 using graphics_engine::types::Expected;
 
 using std::cerr;
@@ -182,28 +189,6 @@ auto ConvertGLShaderType(GLShaderType shader_type) -> GLenum {
 
 }  // namespace
 
-struct GLClearFlags::Impl {
-  std::bitset<kExpectedNumClearBits> flags;
-};
-
-GLClearFlags::GLClearFlags() : impl_(new Impl()) {}
-
-GLClearFlags::~GLClearFlags() { delete impl_; }
-
-auto GLClearFlags::Set(GLClearBit bit) -> GLClearFlags& {
-  impl_->flags.set(to_underlying(bit));
-  return *this;
-}
-
-auto GLClearFlags::Reset(GLClearBit bit) -> GLClearFlags& {
-  impl_->flags.reset(to_underlying(bit));
-  return *this;
-}
-
-auto GLClearFlags::Test(GLClearBit bit) const -> bool {
-  return impl_->flags.test(to_underlying(bit));
-}
-
 auto AttachShader(unsigned int program, unsigned int shader) -> Expected<void> {
   glAttachShader(program, shader);
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
@@ -282,7 +267,7 @@ auto BufferData(GLBufferTarget target, long long int size, const void* data,
   return {};
 }
 
-auto Clear(const GLClearFlags& flags) -> types::Expected<void> {
+auto Clear(const IGLClearFlags& flags) -> types::Expected<void> {
   GLbitfield mask = 0;
   if (flags.Test(kColor)) {
     mask |= GL_COLOR_BUFFER_BIT;

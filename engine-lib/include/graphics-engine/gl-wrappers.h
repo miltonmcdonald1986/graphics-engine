@@ -9,113 +9,36 @@
 #include <memory>
 
 #include "dll-export.h"
+#include "gl-types.h"
+#include "i-gl-clear-flags.h"
 #include "types.h"
 
 namespace graphics_engine::gl_wrappers {
-
-enum class GLBufferTarget : std::uint8_t {
-  kArray,
-  kCopyRead,
-  kCopyWrite,
-  kElementArray,
-  kPixelPack,
-  kPixelUnpack,
-  kTexture,
-  kTransformFeedback,
-  kUniform
-};
-
-enum class GLClearBit { kColor, kDepth, kStencil, kNumBits };
-constexpr int kExpectedNumClearBits = 3;
-static_assert(
-    std::to_underlying(GLClearBit::kNumBits) == kExpectedNumClearBits,
-    "Fix value of kExpectedNumClearBits to match GLClearBit definition!");
-
-class DLLEXPORT GLClearFlags {
- public:
-  GLClearFlags();
-  ~GLClearFlags();
-
-  GLClearFlags(const GLClearFlags&) = delete;
-  GLClearFlags& operator=(const GLClearFlags&) = delete;
-  GLClearFlags(GLClearFlags&&) = delete;
-  GLClearFlags& operator=(GLClearFlags&&) = delete;
-
-  auto Set(GLClearBit bit) -> GLClearFlags&;
-  auto Reset(GLClearBit bit) -> GLClearFlags&;
-  auto Test(GLClearBit bit) const -> bool;
-
- private:
-  struct Impl;
-  Impl* impl_;
-};
-
-enum class GLDataType : std::uint8_t {
-  kByte,
-  kUnsignedByte,
-  kShort,
-  kUnsignedShort,
-  kInt,
-  kUnsignedInt,
-  kHalfFloat,
-  kFloat,
-  kDouble,
-  kInt_2_10_10_10_Rev,
-  kUnsignedInt_2_10_10_10_Rev
-};
-
-enum class GLDataUsagePattern : std::uint8_t {
-  kStreamDraw,
-  kStreamRead,
-  kStreamCopy,
-  kStaticDraw,
-  kStaticRead,
-  kStaticCopy,
-  kDynamicDraw,
-  kDynamicRead,
-  kDynamicCopy
-};
-
-enum class GLDrawMode : std::uint8_t {
-  kPoints,
-  kLineStrip,
-  kLineLoop,
-  kLines,
-  kLineStripAdjacency,
-  kLinesAdjacency,
-  kTriangleStrip,
-  kTriangleFan,
-  kTriangles,
-  kTriangleStripAdjacency,
-  kTrianglesAdjacency
-};
-
-enum class GLShaderType : std::uint8_t { kFragment, kGeometry, kVertex };
 
 DLLEXPORT [[nodiscard]] auto AttachShader(unsigned int program,
                                           unsigned int shader)
     -> types::Expected<void>;
 
-DLLEXPORT [[nodiscard]] auto BindBuffer(GLBufferTarget target,
+DLLEXPORT [[nodiscard]] auto BindBuffer(gl_types::GLBufferTarget target,
                                         unsigned int buffer)
     -> types::Expected<void>;
 
 DLLEXPORT [[nodiscard]] auto BindVertexArray(unsigned int array)
     -> types::Expected<void>;
 
-DLLEXPORT [[nodiscard]] auto BufferData(GLBufferTarget target,
+DLLEXPORT [[nodiscard]] auto BufferData(gl_types::GLBufferTarget target,
                                         long long int size, const void* data,
-                                        GLDataUsagePattern usage)
+                                        gl_types::GLDataUsagePattern usage)
     -> types::Expected<void>;
 
-DLLEXPORT [[nodiscard]] auto Clear(const GLClearFlags& flags)
+DLLEXPORT [[nodiscard]] auto Clear(const i_gl_clear_flags::IGLClearFlags& flags)
     -> types::Expected<void>;
 
-DLLEXPORT [[nodiscard]] auto CreateShader(GLShaderType shader_type)
+DLLEXPORT [[nodiscard]] auto CreateShader(gl_types::GLShaderType shader_type)
     -> types::Expected<unsigned int>;
 
-DLLEXPORT [[nodiscard]] auto DrawArrays(GLDrawMode mode, int first, int count)
-    -> types::Expected<void>;
+DLLEXPORT [[nodiscard]] auto DrawArrays(gl_types::GLDrawMode mode, int first,
+                                        int count) -> types::Expected<void>;
 
 DLLEXPORT [[nodiscard]] auto EnableVertexAttribArray(unsigned int index)
     -> types::Expected<void>;
@@ -129,9 +52,12 @@ DLLEXPORT [[nodiscard]] auto GenVertexArrays(int n, unsigned int* arrays)
 DLLEXPORT [[nodiscard]] auto UseProgram(unsigned int program)
     -> types::Expected<void>;
 
-DLLEXPORT [[nodiscard]] auto VertexAttribPointer(
-    unsigned int index, int size, GLDataType type, unsigned char normalized,
-    int stride, const void* pointer) -> types::Expected<void>;
+DLLEXPORT [[nodiscard]] auto VertexAttribPointer(unsigned int index, int size,
+                                                 gl_types::GLDataType type,
+                                                 unsigned char normalized,
+                                                 int stride,
+                                                 const void* pointer)
+    -> types::Expected<void>;
 
 }  // namespace graphics_engine::gl_wrappers
 
