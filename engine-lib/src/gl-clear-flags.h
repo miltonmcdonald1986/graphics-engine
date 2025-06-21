@@ -15,9 +15,11 @@ namespace graphics_engine::gl_clear_flags {
 class GLClearFlags : public graphics_engine::i_gl_clear_flags::IGLClearFlags {
  public:
   ~GLClearFlags() override = default;
-  auto Set(graphics_engine::gl_types::GLClearBit bit) -> GLClearFlags&;
-  auto Reset(graphics_engine::gl_types::GLClearBit bit) -> GLClearFlags&;
-  auto Test(graphics_engine::gl_types::GLClearBit bit) const -> bool;
+  auto Set(graphics_engine::gl_types::GLClearBit bit) -> GLClearFlags& override;
+  auto Reset(graphics_engine::gl_types::GLClearBit bit)
+      -> GLClearFlags& override;
+  [[nodiscard]] auto Test(graphics_engine::gl_types::GLClearBit bit) const
+      -> bool override;
 
  private:
   static constexpr int kExpectedNumClearBits = 3;

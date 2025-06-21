@@ -18,7 +18,7 @@ class IGLClearFlags {
 
   virtual auto Set(gl_types::GLClearBit bit) -> IGLClearFlags& = 0;
   virtual auto Reset(gl_types::GLClearBit bit) -> IGLClearFlags& = 0;
-  virtual auto Test(gl_types::GLClearBit bit) const -> bool = 0;
+  [[nodiscard]] virtual auto Test(gl_types::GLClearBit bit) const -> bool = 0;
 };
 
 using IGLClearFlagsPtr = std::unique_ptr<IGLClearFlags>;

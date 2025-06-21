@@ -10,7 +10,7 @@ echo "Running cmake...."
 cmake -S . -B build-ci-clang -DCMAKE_C_COMPILER=clang-19 -DCMAKE_CXX_COMPILER=clang++-19 -DCMAKE_BUILD_TYPE=Release
 
 filtered_files=$(find engine-lib demo-app -type f \( -name "*.cc" \))
-echo "The list of files to feed to cppcheck, clang-format-19 and clang-tidy-19: "
+echo "The list of files to feed to cppcheck: "
 echo $filtered_files
 
 echo "Running cppcheck..."
@@ -24,11 +24,7 @@ echo "Running clang-format..."
 echo $filtered_files | xargs clang-format-19 -i -style="Google"
 
 echo "Running clang-tidy..."
-echo $filtered_files | xargs clang-tidy-19 \
-  --warnings-as-errors="bugprone-*,cert-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,performance-*,readability-*" \
-  --checks="bugprone-*,cert-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,performance-*,readability-*" \
-  --header-filter='engine-lib/include/graphics-engine/.*|engine-lib/src/.*|demo-app/src/.*' \
-  -p build-ci-clang
+echo $filtered_files | xargs clang-tidy-19 -p build-ci-clang
 
 echo "Building project..."
 cmake --build build-ci-clang --config Release

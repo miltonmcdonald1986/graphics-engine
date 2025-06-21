@@ -14,7 +14,7 @@ namespace graphics_engine::scene {
 class Scene {
  public:
   virtual ~Scene() = default;
-  virtual [[nodiscard]] auto Render() const -> types::Expected<void> = 0;
+  [[nodiscard]] virtual auto Render() const -> types::Expected<void> = 0;
 };
 
 using ScenePtr = std::unique_ptr<Scene>;

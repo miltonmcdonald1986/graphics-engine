@@ -150,4 +150,4 @@ auto CreateHelloTriangleScene() -> HelloTrianglePtr {
   return hello_triangle;
 }
 
-}  // namespace graphics_engine::hello_triangle
+}  // namespace demo_app::scene_hello_triangle

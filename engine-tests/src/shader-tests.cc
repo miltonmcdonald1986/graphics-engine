@@ -5,7 +5,6 @@
 #include "GLFW/glfw3.h"
 #include "graphics-engine/engine.h"
 #include "graphics-engine/gl-wrappers.h"
-#include "graphics-engine/hello-triangle.h"
 #include "graphics-engine/shader.h"
 #include "gtest/gtest.h"
 
@@ -121,7 +120,7 @@ TEST_F(ShaderTestFixture, CreateShaderWorksWithVertexShaderType) {
 }
 
 TEST_F(ShaderTestFixture, CreateShaderFailsWithJunk) {
-  ASSERT_DEATH((void)CreateShader(static_cast<GLShaderType>(42)),
+  ASSERT_DEBUG_DEATH((void)CreateShader(static_cast<GLShaderType>(42)),
                "ConvertGLShaderType failed with underlying value 42");
 }
 

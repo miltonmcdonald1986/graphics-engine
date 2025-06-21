@@ -8,7 +8,6 @@
 
 #include "GLFW/glfw3.h"
 #include "graphics-engine/engine.h"
-#include "graphics-engine/hello-triangle.h"
 #include "graphics-engine/image.h"
 #include "gtest/gtest.h"
 
@@ -17,7 +16,6 @@ using ::glm::vec4;
 using ::graphics_engine::engine::InitializeEngine;
 using ::graphics_engine::engine::Render;
 using ::graphics_engine::engine::SetBackgroundColor;
-using ::graphics_engine::hello_triangle::HelloTriangle;
 using ::graphics_engine::image::AreIdentical;
 using ::graphics_engine::image::CaptureScreenshot;
 using ::graphics_engine::types::Expected;
