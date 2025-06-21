@@ -1,0 +1,11 @@
+Checks: >
+  bugprone-*,cert-*,clang-analyzer-*,cppcoreguidelines-*,
+  modernize-*,performance-*,readability-*
+WarningsAsErrors: >
+  bugprone-*,cert-*,clang-analyzer-*,cppcoreguidelines-*,
+  modernize-*,performance-*,readability-*
+HeaderFilterRegex: 'engine-lib/include/graphics-engine/.*|engine-lib/src/.*|demo-app/src/.*'
+FormatStyle: none
+CheckOptions:
+  - key:             cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
+    value:           'true'

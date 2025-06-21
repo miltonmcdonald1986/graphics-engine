@@ -13,17 +13,15 @@ namespace graphics_engine::engine {
 
 /// @brief Initialize the graphics engine.
 /// @return void on success, error on failure.
-DLLEXPORT [[nodiscard]] auto InitializeEngine()
-    -> ::graphics_engine::types::Expected<void>;
+DLLEXPORT [[nodiscard]] auto InitializeEngine() -> types::Expected<void>;
 
 /// @brief Render everything in the graphics engine.
 /// @return void on success, error on failure.
-DLLEXPORT [[nodiscard]] auto Render()
-    -> ::graphics_engine::types::Expected<void>;
+DLLEXPORT [[nodiscard]] auto Render() -> types::Expected<void>;
 
 /// @brief Sets the background color for the rendering engine.
 /// @param color The new background color as a `glm::vec4` (RGBA format).
-DLLEXPORT auto SetBackgroundColor(const ::glm::vec4& color) -> void;
+DLLEXPORT auto SetBackgroundColor(const glm::vec4& color) -> void;
 
 }  // namespace graphics_engine::engine
 

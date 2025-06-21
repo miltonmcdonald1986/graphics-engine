@@ -6,6 +6,9 @@
 
 #include <format>
 
+using std::format;
+using std::string;
+
 namespace {
 
 constexpr int kEngineLibVersionMajor = 1;
@@ -16,9 +19,9 @@ constexpr int kEngineLinVersionPatch = 0;
 
 namespace graphics_engine::version {
 
-[[nodiscard]] auto GetEngineLibVersion() -> std::string {
-  return std::format("{}.{}.{}", kEngineLibVersionMajor, kEngineLibVersionMinor,
-                     kEngineLinVersionPatch);
+[[nodiscard]] auto GetEngineLibVersion() -> string {
+  return format("{}.{}.{}", kEngineLibVersionMajor, kEngineLibVersionMinor,
+                kEngineLinVersionPatch);
 }
 
 }  // namespace graphics_engine::version

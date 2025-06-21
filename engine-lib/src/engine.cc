@@ -6,10 +6,13 @@
 
 #include "error.h"
 #include "glad/glad.h"
+#include "graphics-engine/gl-wrappers.h"
 
 using ::glm::vec4;
 
-using enum ::graphics_engine::error::ErrorCode;
+using ::graphics_engine::error::CheckGLError;
+using ::graphics_engine::error::MakeErrorCode;
+using enum ::graphics_engine::types::ErrorCode;
 using ::graphics_engine::types::Expected;
 
 using ::std::unexpected;
@@ -18,7 +21,7 @@ namespace graphics_engine::engine {
 
 auto InitializeEngine() -> Expected<void> {
   if (gladLoadGL() == 0) {
-    return unexpected(MakeErrorCode(kEngineInitializationFailed));
+    return unexpected(MakeErrorCode(kGladLoadGL));
   }
 
   return {};
@@ -27,6 +30,7 @@ auto InitializeEngine() -> Expected<void> {
 auto Render() -> Expected<void> {
   glClear(GL_COLOR_BUFFER_BIT);
   assert(glGetError() == GL_NO_ERROR);
+
   return {};
 }
 

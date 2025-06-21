@@ -3,11 +3,35 @@
 # Exit immediately if a command fails
 set -e
 
-echo "Run doxygen..."
-doxygen ./Doxyfile
+# Default options
+KEEP_BUILD=false
+SKIP_DOXYGEN=false
 
-echo "Removing build directory..."
-rm -rf build-ci-gcc
+# Parse command-line switches
+for arg in "$@"; do
+    if [[ "$arg" == "--keep-build" ]]; then
+        KEEP_BUILD=true
+	elif [[ "$arg" == "--skip-doxygen" ]]; then
+		SKIP_DOXYGEN=true
+    fi
+done
+
+# Run doxygen unless "--skip-doxygen" is passed
+if [ "$SKIP_DOXYGEN" == false ]; then
+    echo "Run doxygen..."
+    doxygen ./Doxyfile
+else
+    echo "Skipping Doxygen generation."
+fi
+
+# Remove build directory unless "--keep-build" is passed
+if [ "$KEEP_BUILD" == false ]; then
+    echo "Removing build directory..."
+    rm -rf build-ci-gcc
+else
+    echo "Skipping build directory removal."
+fi
+
 
 echo "Running CMake with GCC..."
 cmake -S . -B build-ci-gcc -DCMAKE_C_COMPILER=gcc-13 -DCMAKE_CXX_COMPILER=g++-13 -DENABLE_COVERAGE_GCC=ON -DCMAKE_BUILD_TYPE=Release

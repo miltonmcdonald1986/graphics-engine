@@ -7,11 +7,9 @@
 #include <vector>
 
 #include "GLFW/glfw3.h"
-
-#include "gtest/gtest.h"
-
 #include "graphics-engine/engine.h"
 #include "graphics-engine/image.h"
+#include "gtest/gtest.h"
 
 using ::glm::vec4;
 
@@ -37,7 +35,9 @@ using ::testing::Test;
 using ::testing::TestInfo;
 using ::testing::UnitTest;
 
-class GLFWTestFixture : public Test {
+namespace graphics_engine_tests::engine_tests {
+
+class EngineTestFixture : public Test {
  public:
   static void SetUpTestSuite() {
     ASSERT_EQ(glfwInit(), GLFW_TRUE);
@@ -52,6 +52,9 @@ class GLFWTestFixture : public Test {
     glfwMakeContextCurrent(window_);
     error = glfwGetError(nullptr);
     ASSERT_EQ(error, GLFW_NO_ERROR);
+
+    auto result = InitializeEngine();
+    ASSERT_TRUE(result.has_value());
   }
 
   static void TearDownTestSuite() {
@@ -64,7 +67,7 @@ class GLFWTestFixture : public Test {
   static GLFWwindow* window_;
 };
 
-GLFWwindow* GLFWTestFixture::window_ = nullptr;
+GLFWwindow* EngineTestFixture::window_ = nullptr;
 
 TEST(EngineTests, AreIdenticalWorksWithIdenticalFiles) {
   Expected<bool> expected_comparison =
@@ -104,18 +107,15 @@ TEST(EngineTests, InitializeEngineNoContext) {
   ASSERT_FALSE(result.has_value());
   ASSERT_STREQ(result.error().category().name(), "graphics_engine::error");
   ASSERT_EQ(result.error().value(), 1);
-  ASSERT_EQ(result.error().message(), "Engine Initialization failed.");
+  ASSERT_EQ(result.error().message(), "glad failed to load OpenGL.");
 }
 
-TEST_F(GLFWTestFixture, CaptureScreenshotFailsIfItCantWriteTheFile) {
-  
+TEST_F(EngineTestFixture, CaptureScreenshotFailsIfItCantWriteTheFile) {
   // Create a listener to clean up the file after the test.
   class CleanUp : public EmptyTestEventListener {
    public:
     CleanUp(const path& path) : path_(path) {}
-    void OnTestEnd(const TestInfo&) override {
-      remove(path_);
-    }
+    void OnTestEnd(const TestInfo&) override { remove(path_); }
 
    private:
     path path_{};
@@ -123,15 +123,12 @@ TEST_F(GLFWTestFixture, CaptureScreenshotFailsIfItCantWriteTheFile) {
 
   const path file{temp_directory_path() / "screenshot.png"};
   UnitTest::GetInstance()->listeners().Append(new CleanUp(file));
-  
-  auto result = InitializeEngine();
-  ASSERT_TRUE(result.has_value());
 
   // Create a file.
   ofstream f_out(file);
   f_out << "Hello world";
   f_out.close();
-  permissions(file, owner_read|group_read|others_read);
+  permissions(file, owner_read | group_read | others_read);
 
   Expected<void> expected_path{CaptureScreenshot()};
   ASSERT_FALSE(expected_path.has_value());
@@ -141,15 +138,7 @@ TEST_F(GLFWTestFixture, CaptureScreenshotFailsIfItCantWriteTheFile) {
             "Stb Error: Failed to write png file.");
 }
 
-TEST_F(GLFWTestFixture, InitializeEngineWithContext) {
-  auto result = InitializeEngine();
-  ASSERT_TRUE(result.has_value());
-}
-
-TEST_F(GLFWTestFixture, SetBackgroundColor) {
-  auto result = InitializeEngine();
-  ASSERT_TRUE(result.has_value());
-
+TEST_F(EngineTestFixture, SetBackgroundColor) {
   SetBackgroundColor(vec4{0.2F, 0.3F, 0.3F, 1.0F});
   Expected<void> expected_result =
       Render().and_then([]() { return CaptureScreenshot(); });
@@ -164,9 +153,18 @@ TEST_F(GLFWTestFixture, SetBackgroundColor) {
   ASSERT_TRUE(expected_comparison.value());
 }
 
-// TEST_F(GLFWTestFixture, Sandbox) {
-//  Uncomment and start coding in here to just play around!
-// }
+//TEST_F(EngineTestFixture, Sandbox) {
+//  SetBackgroundColor(vec4{0.2F, 0.3F, 0.3F, 1.0F});
+//
+//  HelloTriangle scene;
+//  Expected<void> draw_result =
+//      scene.Initialize()
+//          .and_then([&scene]() { return scene.Render(); })
+//          .and_then([]() { return CaptureScreenshot(); });
+//  ASSERT_TRUE(draw_result.has_value());
+//}
+
+}  // namespace graphics_engine_tests::engine_tests
 
 int main(int argc, char** argv) {
   InitGoogleTest(&argc, argv);
