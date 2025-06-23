@@ -24,9 +24,8 @@ auto GLClearFlags::Test(GLClearBit bit) const -> bool {
   return flags_.test(to_underlying(bit));
 }
 
-}  // namespace graphics_engine::gl_clear_flags
-
-auto graphics_engine::i_gl_clear_flags::CreateIGLClearFlags()
-    -> IGLClearFlagsPtr {
-  return std::make_unique<gl_clear_flags::GLClearFlags>();
+auto CreateIGLClearFlags() -> IGLClearFlagsPtr {
+  return std::make_unique<GLClearFlags>();
 }
+
+}  // namespace graphics_engine::gl_clear_flags

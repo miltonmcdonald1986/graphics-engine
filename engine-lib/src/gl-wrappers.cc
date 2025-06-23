@@ -20,6 +20,7 @@ using enum graphics_engine::gl_types::GLClearBit;
 using enum graphics_engine::gl_types::GLDataType;
 using enum graphics_engine::gl_types::GLDataUsagePattern;
 using enum graphics_engine::gl_types::GLDrawMode;
+using enum graphics_engine::gl_types::GLShaderObjectParameter;
 using enum graphics_engine::gl_types::GLShaderType;
 
 using graphics_engine::error::MakeErrorCode;
@@ -27,8 +28,9 @@ using graphics_engine::gl_types::GLBufferTarget;
 using graphics_engine::gl_types::GLDataType;
 using graphics_engine::gl_types::GLDataUsagePattern;
 using graphics_engine::gl_types::GLDrawMode;
+using graphics_engine::gl_types::GLShaderObjectParameter;
 using graphics_engine::gl_types::GLShaderType;
-using graphics_engine::i_gl_clear_flags::IGLClearFlags;
+using graphics_engine::gl_clear_flags::IGLClearFlags;
 using graphics_engine::types::Expected;
 
 using std::cerr;
@@ -40,6 +42,8 @@ static_assert(is_same_v<GLbitfield, unsigned int>,
               "GLbitfield and unsigned int are not the same type!");
 static_assert(is_same_v<GLboolean, unsigned char>,
               "GLboolean and unsigned char are not the same type!");
+static_assert(is_same_v<GLchar, char>,
+              "GLchar and char are not the same type!");
 static_assert(is_same_v<GLint, int>, "GLint and int are not the same type!");
 static_assert(is_same_v<GLsizei, int>,
               "GLsizei and int are not the same type!");
@@ -172,6 +176,25 @@ auto ConvertGLDrawMode(GLDrawMode mode) -> GLenum {
   }
 }
 
+auto ConvertGLShaderObjectParameter(GLShaderObjectParameter pname) -> GLenum
+{
+  switch (pname) {
+    default:
+      assert(false);  // If we get here, add a new case to the switch.
+      [[fallthrough]];
+    case kShaderType:
+      return GL_SHADER_TYPE;
+    case kDeleteStatus:
+      return GL_DELETE_STATUS;
+    case kCompileStatus:
+      return GL_COMPILE_STATUS;
+    case kInfoLogLength:
+      return GL_INFO_LOG_LENGTH;
+    case kShaderSourceLength:
+      return GL_SHADER_SOURCE_LENGTH;
+  }
+}
+
 auto ConvertGLShaderType(GLShaderType shader_type) -> GLenum {
   switch (shader_type) {
     default:
@@ -294,6 +317,34 @@ auto Clear(const IGLClearFlags& flags) -> types::Expected<void> {
   return {};
 }
 
+auto CompileShader(unsigned int shader) -> Expected<void> {
+  glCompileShader(shader);
+  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
+    cerr << "glCompileShader failed with error code " << error << '\n';
+    switch (error) {
+      default:
+        assert(false);  // If we get here, add a new case to the switch.
+        [[fallthrough]];
+      case GL_INVALID_OPERATION:
+        return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
+      case GL_INVALID_VALUE:
+        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
+    }
+  }
+
+  return {};
+}
+
+auto CreateProgram() -> Expected<unsigned int> {
+  GLuint program_id = glCreateProgram();
+  if (program_id == 0) {
+    cerr << "An error occurred creating the program object.";
+    return unexpected(MakeErrorCode(kGLError));
+  }
+
+  return program_id;
+}
+
 auto CreateShader(GLShaderType shader_type) -> Expected<unsigned int> {
   GLenum gl_shader_type = ConvertGLShaderType(shader_type);
   GLuint shader = glCreateShader(gl_shader_type);
@@ -378,6 +429,87 @@ auto GenVertexArrays(int n, unsigned int* arrays) -> Expected<void> {
         [[fallthrough]];
       case GL_INVALID_VALUE:
         return unexpected(MakeErrorCode(kGLErrorInvalidValue));
+    }
+  }
+
+  return {};
+}
+
+DLLEXPORT [[nodiscard]] auto GetShaderInfoLog(unsigned int shader,
+                                              int max_length, int* length,
+                                              char* info_log)
+    -> types::Expected<void> {
+  glGetShaderInfoLog(shader, max_length, length, info_log);
+  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
+    cerr << "glGetShaderInfoLog failed with error code " << error << '\n';
+    switch (error) {
+      default:
+        assert(false);  // If we get here, add a new case to the switch.
+        [[fallthrough]];
+      case GL_INVALID_VALUE:
+        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
+      case GL_INVALID_OPERATION:
+        return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
+    }
+  }
+
+  return {};
+}
+
+DLLEXPORT [[nodiscard]] auto GetShaderiv(
+    unsigned int shader, gl_types::GLShaderObjectParameter pname, int* params)
+    -> types::Expected<void> {
+  GLenum gl_pname = ConvertGLShaderObjectParameter(pname);
+  glGetShaderiv(shader, gl_pname, params);
+  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
+    cerr << "glGetShaderiv failed with error code " << error << '\n';
+    switch (error) {
+      default:
+        assert(false);  // If we get here, add a new case to the switch.
+        [[fallthrough]];
+      case GL_INVALID_ENUM:
+        return unexpected(MakeErrorCode(kGLErrorInvalidEnum));
+      case GL_INVALID_OPERATION:
+        return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
+      case GL_INVALID_VALUE:
+        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
+    }
+  }
+
+  return {};
+}
+
+auto LinkProgram(unsigned int program) -> types::Expected<void> {
+  glLinkProgram(program);
+  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
+    cerr << "glLinkProgram failed with error code " << error << '\n';
+    switch (error) {
+      default:
+        assert(false);  // If we get here, add a new case to the switch.
+        [[fallthrough]];
+      case GL_INVALID_VALUE:
+        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
+      case GL_INVALID_OPERATION:
+        return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
+    }
+  }
+
+  return {};
+}
+
+auto ShaderSource(unsigned int shader, int count, const char** string,
+                  const int* length) -> Expected<void> {
+  glShaderSource(shader, count, string, length);
+  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
+    cerr << "glShaderSource failed with error code " << error << '\n';
+    switch (error) {
+      default:
+        assert(false);  // If we get here, add a new case to the switch
+        [[fallthrough]];
+      case GL_INVALID_VALUE:
+        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
+      case GL_INVALID_OPERATION:
+        return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
     }
   }
 

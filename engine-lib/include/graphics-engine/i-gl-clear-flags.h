@@ -10,7 +10,7 @@
 #include "dll-export.h"
 #include "gl-types.h"
 
-namespace graphics_engine::i_gl_clear_flags {
+namespace graphics_engine::gl_clear_flags {
 
 class IGLClearFlags {
  public:

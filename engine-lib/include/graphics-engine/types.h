@@ -8,12 +8,16 @@
 #include <cstdint>
 #include <expected>
 #include <system_error>
+#include <unordered_map>
+
+#include "gl-types.h"
 
 namespace graphics_engine::types {
 
 enum class ErrorCode : std::uint8_t {
   // kNoError = 0,
   kGladLoadGL = 1,
+  kGLError,
   kGLErrorInvalidEnum,
   kGLErrorInvalidOperation,
   kGLErrorInvalidValue,
@@ -28,6 +32,8 @@ enum class ErrorCode : std::uint8_t {
 
 template <typename T>
 using Expected = std::expected<T, std::error_code>;
+
+using ShaderSourceMap = std::unordered_map<gl_types::GLShaderType, std::string>;
 
 }  // namespace graphics_engine::types
 

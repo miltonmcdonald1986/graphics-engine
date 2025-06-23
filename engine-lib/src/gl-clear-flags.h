@@ -12,19 +12,17 @@
 
 namespace graphics_engine::gl_clear_flags {
 
-class GLClearFlags : public graphics_engine::i_gl_clear_flags::IGLClearFlags {
+class GLClearFlags : public IGLClearFlags {
  public:
   ~GLClearFlags() override = default;
-  auto Set(graphics_engine::gl_types::GLClearBit bit) -> GLClearFlags& override;
-  auto Reset(graphics_engine::gl_types::GLClearBit bit)
-      -> GLClearFlags& override;
-  [[nodiscard]] auto Test(graphics_engine::gl_types::GLClearBit bit) const
-      -> bool override;
+  auto Set(gl_types::GLClearBit bit) -> GLClearFlags& override;
+  auto Reset(gl_types::GLClearBit bit) -> GLClearFlags& override;
+  [[nodiscard]] auto Test(gl_types::GLClearBit bit) const -> bool override;
 
  private:
   static constexpr int kExpectedNumClearBits = 3;
   static_assert(
-      std::to_underlying(graphics_engine::gl_types::GLClearBit::kNumBits) ==
+      std::to_underlying(gl_types::GLClearBit::kNumBits) ==
           kExpectedNumClearBits,
       "Fix value of kExpectedNumClearBits to match GLClearBit definition!");
 

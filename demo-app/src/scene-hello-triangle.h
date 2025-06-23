@@ -5,6 +5,7 @@
 #ifndef DEMO_APP_SCENE_HELLO_TRIANGLE_H_
 #define DEMO_APP_SCENE_HELLO_TRIANGLE_H_
 
+#include "graphics-engine/i-shader.h"
 #include "graphics-engine/scene.h"
 #include "graphics-engine/types.h"
 
@@ -26,6 +27,7 @@ class HelloTriangle : public graphics_engine::scene::Scene {
   HelloTriangle() = default;
   [[nodiscard]] auto Initialize() -> graphics_engine::types::Expected<void>;
 
+  graphics_engine::shader::IShaderPtr shader_;
   unsigned int shader_program_ = 0;
   unsigned int vao_ = 0;
 };
