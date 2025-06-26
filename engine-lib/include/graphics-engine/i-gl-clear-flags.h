@@ -10,7 +10,7 @@
 #include "dll-export.h"
 #include "gl-types.h"
 
-namespace graphics_engine::i_gl_clear_flags {
+namespace graphics_engine::gl_clear_flags {
 
 class IGLClearFlags {
  public:
@@ -24,6 +24,6 @@ class IGLClearFlags {
 using IGLClearFlagsPtr = std::unique_ptr<IGLClearFlags>;
 DLLEXPORT [[nodiscard]] auto CreateIGLClearFlags() -> IGLClearFlagsPtr;
 
-}  // namespace graphics_engine::i_gl_clear_flags
+}  // namespace graphics_engine::gl_clear_flags
 
 #endif  // ENGINE_LIB_I_GL_CLEAR_FLAGS_H_

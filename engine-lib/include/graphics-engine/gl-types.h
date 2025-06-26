@@ -63,6 +63,14 @@ enum class GLDrawMode : std::uint8_t {
   kTrianglesAdjacency
 };
 
+enum class GLShaderObjectParameter : std::uint8_t {
+  kShaderType,
+  kDeleteStatus,
+  kCompileStatus,
+  kInfoLogLength,
+  kShaderSourceLength
+};
+
 enum class GLShaderType : std::uint8_t { kFragment, kGeometry, kVertex };
 
 }  // namespace graphics_engine::gl_types

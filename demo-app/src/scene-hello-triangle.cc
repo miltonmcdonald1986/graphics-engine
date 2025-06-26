@@ -8,7 +8,8 @@
 #include <cassert>
 
 #include "graphics-engine/gl-types.h"
-#include "graphics-engine/shader.h"
+#include "graphics-engine/gl-wrappers.h"
+#include "graphics-engine/i-shader.h"
 
 using enum graphics_engine::gl_types::GLBufferTarget;
 using enum graphics_engine::gl_types::GLDataType;
@@ -25,10 +26,9 @@ using graphics_engine::gl_wrappers::GenBuffers;
 using graphics_engine::gl_wrappers::GenVertexArrays;
 using graphics_engine::gl_wrappers::UseProgram;
 using graphics_engine::gl_wrappers::VertexAttribPointer;
-using graphics_engine::shader::CreateAndCompileShader;
-using graphics_engine::shader::CreateAndLinkShaderProgram;
-using graphics_engine::shader::DeleteShader;
+using graphics_engine::shader::CreateIShader;
 using graphics_engine::types::Expected;
+using graphics_engine::types::ShaderSourceMap;
 
 using std::string;
 
@@ -49,22 +49,8 @@ void main()
   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
 })";
 
-  Expected<unsigned int> vs_id = CreateAndCompileShader(kVertex, vs_src);
-  assert(vs_id.has_value());
-
-  Expected<unsigned int> fs_id = CreateAndCompileShader(kFragment, fs_src);
-  assert(fs_id.has_value());
-
-  auto program_id = CreateAndLinkShaderProgram({*vs_id, *fs_id});
-  assert(program_id.has_value());
-
-  shader_program_ = *program_id;
-
-  Expected<void> result = DeleteShader(*vs_id);
-  assert(result.has_value());
-
-  result = DeleteShader(*fs_id);
-  assert(result.has_value());
+  const ShaderSourceMap sources = {{kVertex, vs_src}, {kFragment, fs_src}};
+  shader_ = CreateIShader(sources);
 
   const std::array<float, 9> vertices = {
       -0.5F, -0.5F, 0.0F,  // left
@@ -72,7 +58,7 @@ void main()
       0.0F,  0.5F,  0.0F   // top
   };
 
-  result = GenVertexArrays(1, &vao_);
+  Expected<void> result = GenVertexArrays(1, &vao_);
   if (!result.has_value()) {
     assert(false);
     return std::unexpected(result.error());
@@ -119,7 +105,7 @@ void main()
 }
 
 auto HelloTriangle::Render() const -> Expected<void> {
-  Expected<void> result = UseProgram(this->shader_program_);
+  Expected<void> result = UseProgram(shader_->GetProgramId());
   if (!result.has_value()) {
     assert(false);
     return std::unexpected(result.error());

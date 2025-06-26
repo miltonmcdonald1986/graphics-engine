@@ -23,7 +23,7 @@ class ErrorCategory : public error_category {
   }
 
   [[nodiscard]] auto message(int condition) const -> string override {
-    constexpr int expectedCount = 11;
+    constexpr int expectedCount = 12;
     static_assert(to_underlying(kNumErrorCodes) == expectedCount,
                   "Update the switch statement below!");
 
@@ -33,6 +33,8 @@ class ErrorCategory : public error_category {
         [[fallthrough]];
       case kGladLoadGL:
         return "glad failed to load OpenGL.";
+      case kGLError:
+        return "OpenGL Error";
       case kGLErrorInvalidOperation:
         return "OpenGL Error: Invalid Operation.";
       case kGLErrorInvalidValue:

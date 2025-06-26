@@ -31,8 +31,13 @@ DLLEXPORT [[nodiscard]] auto BufferData(gl_types::GLBufferTarget target,
                                         gl_types::GLDataUsagePattern usage)
     -> types::Expected<void>;
 
-DLLEXPORT [[nodiscard]] auto Clear(const i_gl_clear_flags::IGLClearFlags& flags)
+DLLEXPORT [[nodiscard]] auto Clear(const gl_clear_flags::IGLClearFlags& flags)
     -> types::Expected<void>;
+
+DLLEXPORT [[nodiscard]] auto CompileShader(unsigned int shader)
+    -> types::Expected<void>;
+
+DLLEXPORT [[nodiscard]] auto CreateProgram() -> types::Expected<unsigned int>;
 
 DLLEXPORT [[nodiscard]] auto CreateShader(gl_types::GLShaderType shader_type)
     -> types::Expected<unsigned int>;
@@ -47,6 +52,23 @@ DLLEXPORT [[nodiscard]] auto GenBuffers(int n, unsigned int* buffers)
     -> types::Expected<void>;
 
 DLLEXPORT [[nodiscard]] auto GenVertexArrays(int n, unsigned int* arrays)
+    -> types::Expected<void>;
+
+DLLEXPORT [[nodiscard]] auto GetShaderInfoLog(unsigned int shader,
+                                              int max_length, int* length,
+                                              char* info_log)
+    -> types::Expected<void>;
+
+DLLEXPORT [[nodiscard]] auto GetShaderiv(
+    unsigned int shader, gl_types::GLShaderObjectParameter pname, int* params)
+    -> types::Expected<void>;
+
+DLLEXPORT [[nodiscard]] auto LinkProgram(unsigned int program)
+    -> types::Expected<void>;
+
+DLLEXPORT [[nodiscard]] auto ShaderSource(unsigned int shader, int count,
+                                          const char** string,
+                                          const int* length)
     -> types::Expected<void>;
 
 DLLEXPORT [[nodiscard]] auto UseProgram(unsigned int program)

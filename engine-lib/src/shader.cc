@@ -2,7 +2,7 @@
 // This source code is licensed under the MIT License. See LICENSE file in the
 // project root for details.
 
-#include "graphics-engine/shader.h"
+#include "shader.h"
 
 #include <algorithm>
 #include <cassert>
@@ -14,7 +14,9 @@
 
 #include "error.h"
 #include "glad/glad.h"
+#include "graphics-engine/i-shader.h"
 
+using enum graphics_engine::gl_types::GLShaderObjectParameter;
 using enum graphics_engine::gl_types::GLShaderType;
 using enum graphics_engine::types::ErrorCode;
 
@@ -22,8 +24,16 @@ using graphics_engine::error::CheckGLError;
 using graphics_engine::error::MakeErrorCode;
 using graphics_engine::gl_types::GLShaderType;
 using graphics_engine::gl_wrappers::AttachShader;
+using graphics_engine::gl_wrappers::CompileShader;
+using graphics_engine::gl_wrappers::CreateProgram;
 using graphics_engine::gl_wrappers::CreateShader;
+using graphics_engine::gl_wrappers::GetShaderInfoLog;
+using graphics_engine::gl_wrappers::GetShaderiv;
+using graphics_engine::gl_wrappers::LinkProgram;
+using graphics_engine::gl_wrappers::ShaderSource;
+using graphics_engine::shader::IShaderPtr;
 using graphics_engine::types::Expected;
+using graphics_engine::types::ShaderSourceMap;
 
 using std::cerr;
 using std::exception;
@@ -49,96 +59,7 @@ static_assert(is_same_v<GLuint, unsigned int>,
 
 namespace graphics_engine::shader {
 
-auto CompileShader(unsigned int shader_id, const string& source_code)
-    -> Expected<void> {
-  const GLchar* source_code_cstr = source_code.c_str();
-  Expected<void> result =
-      ShaderSource(shader_id, 1, &source_code_cstr, nullptr);
-  if (!result) {
-    cerr << "ShaderSource failed with error code " << result.error().value()
-         << ": " << result.error().message() << '\n';
-    return unexpected(MakeErrorCode(kShaderError));
-  }
-
-  glCompileShader(shader_id);
-  CheckGLError();
-
-  GLint compile_status{};
-  glGetShaderiv(shader_id, GL_COMPILE_STATUS, &compile_status);
-  CheckGLError();
-
-  if (compile_status == GL_FALSE) {
-    GLint info_log_length{};
-    glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &info_log_length);
-    CheckGLError();
-
-    string info_log(info_log_length, '\0');
-    glGetShaderInfoLog(shader_id, info_log_length, nullptr, info_log.data());
-    CheckGLError();
-
-    cerr << "Shader compilation failed: " << info_log << '\n';
-    return unexpected(MakeErrorCode(kShaderError));
-  }
-
-  assert(compile_status == GL_TRUE);
-
-  return {};
-}
-
-auto CreateAndCompileShader(gl_types::GLShaderType type,
-                            const string& source_code)
-    -> Expected<unsigned int> {
-  Expected<GLuint> expected_id = CreateShader(type);
-  if (!expected_id.has_value()) {
-    return unexpected(MakeErrorCode(kShaderError));
-  }
-
-  GLuint shader_id = expected_id.value();
-  Expected<void> compile_result = CompileShader(shader_id, source_code);
-  if (!compile_result.has_value()) {
-    return unexpected(MakeErrorCode(kShaderError));
-  }
-
-  return shader_id;
-}
-
-auto CreateAndLinkShaderProgram(const vector<unsigned int>& shader_ids)
-    -> Expected<unsigned int> {
-  Expected<unsigned int> program_id = CreateProgram();
-  CheckGLError();
-
-  try {
-    for_each(shader_ids, [&program_id](GLuint shader_id) {
-      if (Expected<void> result{AttachShader(*program_id, shader_id)};
-          !result.has_value()) {
-        int val = result.error().value();
-        constexpr const char* fmt =
-            "AttachShader failed with error code {}: {}";
-        const string msg = result.error().message();
-        throw runtime_error(format(fmt, val, msg));
-      }
-    });
-  } catch (const exception& e) {
-    cerr << "Caught std::exception: " << e.what() << '\n';
-    return unexpected(MakeErrorCode(kShaderError));
-  }
-
-  glLinkProgram(*program_id);
-  CheckGLError();
-
-  return program_id;
-}
-
-auto CreateProgram() -> Expected<unsigned int> {
-  GLuint program_id = glCreateProgram();
-  CheckGLError();
-
-  assert(program_id > 0U);
-
-  return program_id;
-}
-
-DLLEXPORT [[nodiscard]] auto DeleteShader(unsigned int shader_id)
+auto DeleteShader(unsigned int shader_id)
     -> ::graphics_engine::types::Expected<void> {
   glDeleteShader(shader_id);
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
@@ -155,21 +76,107 @@ DLLEXPORT [[nodiscard]] auto DeleteShader(unsigned int shader_id)
   return {};
 }
 
-auto ShaderSource(unsigned int shader, int count, const char* const* string,
-                  const int* length) -> Expected<void> {
-  glShaderSource(shader, count, string, length);
-  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
-    cerr << "glShaderSource failed with error code " << error << '\n';
-    switch (error) {
-      default:
-        assert(false);  // If we get here, add a new case to the switch
-        [[fallthrough]];
-      case GL_INVALID_VALUE:
-        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
-      case GL_INVALID_OPERATION:
-        return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
+auto CreateIShader(const ShaderSourceMap& sources) -> IShaderPtr {
+  Shader shader;
+  Expected<void> result = shader.Initialize(sources);
+  if (!result.has_value()) {
+    cerr << "Shader initialization failed with error code "
+         << result.error().value() << ": " << result.error().message() << '\n';
+    return nullptr;
+  }
+
+  return std::make_unique<Shader>(shader);
+}
+
+auto Shader::GetProgramId() const -> unsigned int { return program_id_; }
+
+auto Shader::Initialize(const types::ShaderSourceMap& sources)
+    -> types::Expected<void> {
+  std::vector<GLuint> shader_ids;
+
+  // Compile each of the shaders in the shader source map.
+  for (const auto& [shader_type, source_code] : sources) {
+    Expected<GLuint> shader_id = CreateShader(shader_type);
+    if (!shader_id) {
+      cerr << "CreateShader failed for shader type "
+           << to_underlying(shader_type) << " with error code "
+           << shader_id.error().value() << ": " << shader_id.error().message()
+           << '\n';
+      return unexpected(shader_id.error());
+    }
+
+    shader_ids.push_back(*shader_id);
+
+    const GLchar* source_code_cstr = source_code.c_str();
+    Expected<void> result =
+        ShaderSource(*shader_id, 1, &source_code_cstr, nullptr);
+    if (!result.has_value()) {
+      cerr << "ShaderSource failed with error code " << result.error().value()
+           << ": " << result.error().message() << '\n';
+      return unexpected(result.error());
+    }
+
+    result = CompileShader(*shader_id);
+    if (!result.has_value()) {
+      cerr << "CompileShader failed with error code " << result.error().value()
+           << ": " << result.error().message() << '\n';
+      return unexpected(result.error());
+    }
+
+    int params{};
+    result = GetShaderiv(*shader_id, kCompileStatus, &params);
+    if (!result.has_value()) {
+      cerr << "GetShaderiv failed with error code " << result.error().value()
+           << ": " << result.error().message() << '\n';
+      return unexpected(result.error());
+    }
+
+    // If compilation failed...
+    if (params == GL_FALSE) {
+      result = GetShaderiv(*shader_id, kInfoLogLength, &params);
+      if (!result.has_value()) {
+        cerr << "GetShaderiv failed with error code " << result.error().value()
+             << ": " << result.error().message() << '\n';
+        return unexpected(result.error());
+      }
+
+      string info_log(params, '\0');
+      result = GetShaderInfoLog(*shader_id, params, nullptr, info_log.data());
+      if (!result.has_value()) {
+        cerr << "GetShaderInfoLog failed with error code "
+             << result.error().value() << ": " << result.error().message()
+             << '\n';
+        return unexpected(result.error());
+      }
     }
   }
+
+  // Compilation succeeded. Time to link.
+  Expected<GLuint> program_id = CreateProgram();
+  if (!program_id) {
+    cerr << "CreateProgram failed with error code "
+         << program_id.error().value() << ": " << program_id.error().message()
+         << '\n';
+    return unexpected(program_id.error());
+  }
+
+  for (const auto& shader_id : shader_ids) {
+    Expected<void> result = AttachShader(*program_id, shader_id);
+    if (!result) {
+      cerr << "AttachShader failed with error code: " << result.error().value()
+           << ": " << result.error().message() << '\n';
+      return unexpected(result.error());
+    }
+  }
+
+  Expected<void> result = LinkProgram(*program_id);
+  if (!result) {
+    cerr << "LinkProgram failed with error code: " << result.error().value()
+         << ": " << result.error().message() << '\n';
+    return unexpected(result.error());
+  }
+
+  program_id_ = *program_id;
 
   return {};
 }
