@@ -24,13 +24,13 @@ using enum graphics_engine::gl_types::GLShaderObjectParameter;
 using enum graphics_engine::gl_types::GLShaderType;
 
 using graphics_engine::error::MakeErrorCode;
+using graphics_engine::gl_clear_flags::IGLClearFlags;
 using graphics_engine::gl_types::GLBufferTarget;
 using graphics_engine::gl_types::GLDataType;
 using graphics_engine::gl_types::GLDataUsagePattern;
 using graphics_engine::gl_types::GLDrawMode;
 using graphics_engine::gl_types::GLShaderObjectParameter;
 using graphics_engine::gl_types::GLShaderType;
-using graphics_engine::gl_clear_flags::IGLClearFlags;
 using graphics_engine::types::Expected;
 
 using std::cerr;
@@ -176,8 +176,7 @@ auto ConvertGLDrawMode(GLDrawMode mode) -> GLenum {
   }
 }
 
-auto ConvertGLShaderObjectParameter(GLShaderObjectParameter pname) -> GLenum
-{
+auto ConvertGLShaderObjectParameter(GLShaderObjectParameter pname) -> GLenum {
   switch (pname) {
     default:
       assert(false);  // If we get here, add a new case to the switch.

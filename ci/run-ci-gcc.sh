@@ -32,8 +32,7 @@ else
     echo "Skipping build directory removal."
 fi
 
-
-echo "Running CMake with GCC..."
+echo "Running CMake (gcc-13)..."
 cmake -S . -B build-ci-gcc -DCMAKE_C_COMPILER=gcc-13 -DCMAKE_CXX_COMPILER=g++-13 -DENABLE_COVERAGE_GCC=ON -DCMAKE_BUILD_TYPE=Release
 
 echo "Building project..."

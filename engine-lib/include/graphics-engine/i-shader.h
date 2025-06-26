@@ -23,6 +23,6 @@ using IShaderPtr = std::unique_ptr<IShader>;
 DLLEXPORT [[nodiscard]] auto CreateIShader(
     const types::ShaderSourceMap& sources) -> IShaderPtr;
 
-}  // namespace graphics_engine::i_shader
+}  // namespace graphics_engine::shader
 
 #endif  // ENGINE_LIB_I_SHADER_H_

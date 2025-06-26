@@ -88,10 +88,7 @@ auto CreateIShader(const ShaderSourceMap& sources) -> IShaderPtr {
   return std::make_unique<Shader>(shader);
 }
 
-auto Shader::GetProgramId() const -> unsigned int 
-{ 
-    return program_id_; 
-}
+auto Shader::GetProgramId() const -> unsigned int { return program_id_; }
 
 auto Shader::Initialize(const types::ShaderSourceMap& sources)
     -> types::Expected<void> {
@@ -126,7 +123,7 @@ auto Shader::Initialize(const types::ShaderSourceMap& sources)
       return unexpected(result.error());
     }
 
-    int params;
+    int params{};
     result = GetShaderiv(*shader_id, kCompileStatus, &params);
     if (!result.has_value()) {
       cerr << "GetShaderiv failed with error code " << result.error().value()
@@ -163,8 +160,7 @@ auto Shader::Initialize(const types::ShaderSourceMap& sources)
     return unexpected(program_id.error());
   }
 
-  for (const auto& shader_id : shader_ids)
-  {
+  for (const auto& shader_id : shader_ids) {
     Expected<void> result = AttachShader(*program_id, shader_id);
     if (!result) {
       cerr << "AttachShader failed with error code: " << result.error().value()

@@ -41,7 +41,7 @@ void main()
 {
   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
 })";
-  
+
   const string fs_src = R"(#version 330 core
 out vec4 FragColor;
 void main()
@@ -51,7 +51,7 @@ void main()
 
   const ShaderSourceMap sources = {{kVertex, vs_src}, {kFragment, fs_src}};
   shader_ = CreateIShader(sources);
-  
+
   const std::array<float, 9> vertices = {
       -0.5F, -0.5F, 0.0F,  // left
       0.5F,  -0.5F, 0.0F,  // right

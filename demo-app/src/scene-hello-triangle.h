@@ -28,7 +28,6 @@ class HelloTriangle : public graphics_engine::scene::Scene {
   [[nodiscard]] auto Initialize() -> graphics_engine::types::Expected<void>;
 
   graphics_engine::shader::IShaderPtr shader_;
-  unsigned int shader_program_ = 0;
   unsigned int vao_ = 0;
 };
 
