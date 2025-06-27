@@ -2,23 +2,19 @@
 // This source code is licensed under the MIT License. See LICENSE file in the
 // project root for details.
 
-#include "GLFW/glfw3.h"
-#include "graphics-engine/engine.h"
-#include "graphics-engine/gl-wrappers.h"
-#include "graphics-engine/i-shader.h"
+#include <GLFW/glfw3.h>
+#include <graphics-engine/engine.h>
+#include <graphics-engine/i-shader.h>
+
 #include "gtest/gtest.h"
 
 using enum graphics_engine::gl_types::GLShaderType;
-using enum graphics_engine::types::ErrorCode;
 
 using graphics_engine::engine::InitializeEngine;
-using graphics_engine::gl_wrappers::AttachShader;
-using graphics_engine::gl_wrappers::CreateShader;
-using graphics_engine::gl_types::GLShaderType;
-using graphics_engine::types::Expected;
+using graphics_engine::shader::CreateIShader;
+using graphics_engine::types::ShaderSourceMap;
 
 using std::string;
-using std::to_underlying;
 
 using testing::Test;
 
@@ -74,5 +70,12 @@ struct ShaderTestFixture : public Test {
     ASSERT_EQ(error, GLFW_NO_ERROR);
   }
 };
+
+TEST_F(ShaderTestFixture, ShaderWorksWithGoodSourceCode) {
+  ShaderSourceMap sources = {{kVertex, basic_vs_src},
+                             {kFragment, basic_fs_src}};
+  auto shader = CreateIShader(sources);
+  ASSERT_NE(shader->GetProgramId(), 0);
+}
 
 }  // namespace graphics_engine_tests::shader_tests
