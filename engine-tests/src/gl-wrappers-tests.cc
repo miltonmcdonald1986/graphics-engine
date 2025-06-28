@@ -8,13 +8,17 @@
 #include <gtest/gtest.h>
 
 using graphics_engine::engine::InitializeEngine;
+using graphics_engine::gl_types::GLBufferTarget;
 using graphics_engine::gl_wrappers::AttachShader;
-using graphics_engine::gl_wrappers::CreateShader;
+using graphics_engine::gl_wrappers::BindBuffer;
 using graphics_engine::gl_wrappers::CreateProgram;
+using graphics_engine::gl_wrappers::CreateShader;
+using graphics_engine::gl_wrappers::GenBuffers;
 using graphics_engine::types::Expected;
 using std::string;
 using testing::Test;
 
+using enum graphics_engine::gl_types::GLBufferTarget;
 using enum graphics_engine::gl_types::GLShaderType;
 using enum graphics_engine::types::ErrorCode;
 
@@ -49,6 +53,9 @@ struct GLWrappersTestFixture : public Test {
   static void SetUpTestSuite() {
     ASSERT_EQ(glfwInit(), GLFW_TRUE);
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
     int error = glfwGetError(nullptr);
     ASSERT_EQ(error, GLFW_NO_ERROR);
@@ -71,7 +78,7 @@ struct GLWrappersTestFixture : public Test {
   }
 };
 
-TEST_F(GLWrappersTestFixture, AttachShader) {
+TEST_F(GLWrappersTestFixture, AttachShaderWorks) {
   // Trash is handled.
   Expected<void> result = AttachShader(0, 0);
   ASSERT_FALSE(result);
@@ -96,6 +103,23 @@ TEST_F(GLWrappersTestFixture, AttachShader) {
   ASSERT_TRUE(result);
 }
 
-TEST(GLWrappersTest, ConvertGLBufferTargetWorks) {}
+TEST_F(GLWrappersTestFixture, BindBufferWorks) {
+  EXPECT_DEBUG_DEATH((void)BindBuffer(static_cast<GLBufferTarget>(42), 0), "");
+
+  // zero here is actually legal, as buffer set to zero effectively unbinds any
+  // buffer object previously bound, and restores client memory usage for that
+  // buffer object target
+  ASSERT_TRUE(BindBuffer(kArray, 0));
+
+  Expected<void> result{BindBuffer(kArray, 2025)};
+  ASSERT_FALSE(result);
+  ASSERT_EQ(result.error().value(), 4);
+  ASSERT_EQ(result.error().message(), "OpenGL Error: Invalid Operation.");
+
+  // Let's actually gen a real buffer and bind it.
+  unsigned buffer;
+  result = GenBuffers(1, &buffer);
+  ASSERT_TRUE(result);
+}
 
 }  // namespace graphics_engine_tests::gl_wrappers_tests
