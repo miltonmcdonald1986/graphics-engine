@@ -47,31 +47,32 @@ class GLFW {
     cout << "Finished terminating GLFW.\n";
   }
 
-  auto Initialize() -> GLFWwindow* {
+  auto Initialize() -> bool {
     cout << "Initializing GLFW...\n";
     int res_init = glfwInit();
     if (res_init == GLFW_FALSE) {
       assert(false);
-      return nullptr;
+      return false;
     }
 
     const int width = 640;
     const int height = 480;
     const std::string title = "Hello world!";
-    GLFWwindow* window =
-        glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-    if (window == nullptr) {
-      return nullptr;
+    window_ = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+    if (window_ == nullptr) {
+      return false;
     }
 
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(window_);
     if (glfwGetError(nullptr) != GLFW_NO_ERROR) {
-      return nullptr;
+      return false;
     }
 
     cout << "GLFW initialized successfully.\n";
-    return window;
+    return true;
   }
+
+  GLFWwindow* window_{nullptr};
 };
 
 auto main() -> int {
@@ -81,8 +82,7 @@ auto main() -> int {
 #endif
 
   GLFW glfw;
-  auto window = glfw.Initialize();
-  if (window == nullptr) {
+  if (!glfw.Initialize()) {
     cerr << "Failed to initialize GLFW.\n";
     return -1;
   }
@@ -108,7 +108,7 @@ auto main() -> int {
   IGLClearFlagsPtr flags{CreateIGLClearFlags()};
   flags->Set(kColor).Set(kDepth).Set(kStencil);
 
-  while (glfwWindowShouldClose(window) == GLFW_FALSE) {
+  while (glfwWindowShouldClose(glfw.window_) == GLFW_FALSE) {
     assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
 
     Expected<void> did_clear = Clear(*flags);
@@ -125,7 +125,7 @@ auto main() -> int {
       return err.value();
     }
 
-    glfwSwapBuffers(window);
+    glfwSwapBuffers(glfw.window_);
     assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
 
     glfwPollEvents();

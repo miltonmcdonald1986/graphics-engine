@@ -18,7 +18,7 @@ class Shader : public IShader {
  public:
   Shader() = default;
   ~Shader() override;
-  Shader (const Shader&) = delete;
+  Shader(const Shader&) = delete;
 
   [[nodiscard]] auto GetProgramId() const -> unsigned int override;
 

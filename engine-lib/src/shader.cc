@@ -74,8 +74,7 @@ auto CreateIShader(const ShaderSourceMap& sources) -> IShaderPtr {
   return shader;
 }
 
-Shader::~Shader() 
-{
+Shader::~Shader() {
   Expected<void> result = DeleteProgram(program_id_);
   if (!result) {
     cerr << "DeleteProgram failed with error code " << result.error().value()
