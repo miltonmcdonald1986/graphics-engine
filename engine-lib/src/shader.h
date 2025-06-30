@@ -17,7 +17,8 @@ namespace graphics_engine::shader {
 class Shader : public IShader {
  public:
   Shader() = default;
-  ~Shader() override = default;
+  ~Shader() override;
+  Shader (const Shader&) = delete;
 
   [[nodiscard]] auto GetProgramId() const -> unsigned int override;
 

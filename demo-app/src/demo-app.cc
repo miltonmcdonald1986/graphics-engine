@@ -31,8 +31,48 @@ using graphics_engine::types::Expected;
 using graphics_engine::version::GetEngineLibVersion;
 
 using std::cerr;
+using std::cout;
 using std::error_code;
 using std::to_underlying;
+
+class GLFW {
+ public:
+  ~GLFW() {
+    cout << "Terminating GLFW...\n";
+    glfwTerminate();
+    if (glfwGetError(nullptr) != GLFW_NO_ERROR) {
+      // Nothing to do here. Just reporting the failure.
+      cerr << "Failed to terminate GLFW\n";
+    }
+    cout << "Finished terminating GLFW.\n";
+  }
+
+  auto Initialize() -> GLFWwindow* {
+    cout << "Initializing GLFW...\n";
+    int res_init = glfwInit();
+    if (res_init == GLFW_FALSE) {
+      assert(false);
+      return nullptr;
+    }
+
+    const int width = 640;
+    const int height = 480;
+    const std::string title = "Hello world!";
+    GLFWwindow* window =
+        glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+    if (window == nullptr) {
+      return nullptr;
+    }
+
+    glfwMakeContextCurrent(window);
+    if (glfwGetError(nullptr) != GLFW_NO_ERROR) {
+      return nullptr;
+    }
+
+    cout << "GLFW initialized successfully.\n";
+    return window;
+  }
+};
 
 auto main() -> int {
 #ifdef _WIN32
@@ -40,38 +80,25 @@ auto main() -> int {
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-  int res_init = glfwInit();
-  if (res_init == GLFW_FALSE) {
-    assert(false);
+  GLFW glfw;
+  auto window = glfw.Initialize();
+  if (window == nullptr) {
+    cerr << "Failed to initialize GLFW.\n";
     return -1;
   }
-
-  const int width = 640;
-  const int height = 480;
-  const std::string title = "Hello world!";
-  GLFWwindow* window =
-      glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-  assert(window != nullptr);
-
-  glfwMakeContextCurrent(window);
-  assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
 
   std::cout << "engine-lib:\n";
   std::cout << "  version: " << GetEngineLibVersion() << '\n';
 
   Expected<void> result = InitializeEngine();
   if (!result.has_value()) {
-    assert(false);
-
-    glfwTerminate();
-    assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
-
+    cerr << "Failed to initialize engine.\n";
     return -1;
   }
 
   HelloTrianglePtr hello_triangle_scene = CreateHelloTriangleScene();
   if (hello_triangle_scene == nullptr) {
-    assert(false);
+    cerr << "Failed to create scene.\n";
     return -1;
   }
 
@@ -104,9 +131,6 @@ auto main() -> int {
     glfwPollEvents();
     assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
   }
-
-  glfwTerminate();
-  assert(glfwGetError(nullptr) == GLFW_NO_ERROR);
 
   return 0;
 }

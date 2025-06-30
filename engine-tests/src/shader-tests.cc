@@ -12,6 +12,7 @@ using enum graphics_engine::gl_types::GLShaderType;
 
 using graphics_engine::engine::InitializeEngine;
 using graphics_engine::shader::CreateIShader;
+using graphics_engine::shader::IShader;
 using graphics_engine::types::ShaderSourceMap;
 
 using std::string;

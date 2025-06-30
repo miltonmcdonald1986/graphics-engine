@@ -13,6 +13,7 @@ using graphics_engine::gl_wrappers::AttachShader;
 using graphics_engine::gl_wrappers::BindBuffer;
 using graphics_engine::gl_wrappers::CreateProgram;
 using graphics_engine::gl_wrappers::CreateShader;
+using graphics_engine::gl_wrappers::DeleteProgram;
 using graphics_engine::gl_wrappers::GenBuffers;
 using graphics_engine::types::Expected;
 using std::string;
@@ -101,6 +102,8 @@ TEST_F(GLWrappersTestFixture, AttachShaderWorks) {
   // Call the function with the inputs in the correct order.
   result = AttachShader(*program_id, *shader_id);
   ASSERT_TRUE(result);
+
+  ASSERT_TRUE(DeleteProgram(*program_id));
 }
 
 TEST_F(GLWrappersTestFixture, BindBufferWorks) {

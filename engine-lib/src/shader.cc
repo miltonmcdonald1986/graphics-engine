@@ -27,6 +27,9 @@ using graphics_engine::gl_wrappers::AttachShader;
 using graphics_engine::gl_wrappers::CompileShader;
 using graphics_engine::gl_wrappers::CreateProgram;
 using graphics_engine::gl_wrappers::CreateShader;
+using graphics_engine::gl_wrappers::DeleteProgram;
+using graphics_engine::gl_wrappers::DeleteShader;
+using graphics_engine::gl_wrappers::DetachShader;
 using graphics_engine::gl_wrappers::GetShaderInfoLog;
 using graphics_engine::gl_wrappers::GetShaderiv;
 using graphics_engine::gl_wrappers::LinkProgram;
@@ -59,33 +62,27 @@ static_assert(is_same_v<GLuint, unsigned int>,
 
 namespace graphics_engine::shader {
 
-auto DeleteShader(unsigned int shader_id)
-    -> ::graphics_engine::types::Expected<void> {
-  glDeleteShader(shader_id);
-  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
-    cerr << "glDeleteShader failed with error code " << error << '\n';
-    switch (error) {
-      default:
-        assert(false);  // If we get here, add a new case to the switch
-        [[fallthrough]];
-      case GL_INVALID_VALUE:
-        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
-    }
-  }
-
-  return {};
-}
-
 auto CreateIShader(const ShaderSourceMap& sources) -> IShaderPtr {
-  Shader shader;
-  Expected<void> result = shader.Initialize(sources);
+  auto shader = std::make_unique<Shader>();
+  Expected<void> result = shader->Initialize(sources);
   if (!result.has_value()) {
     cerr << "Shader initialization failed with error code "
          << result.error().value() << ": " << result.error().message() << '\n';
     return nullptr;
   }
 
-  return std::make_unique<Shader>(shader);
+  return shader;
+}
+
+Shader::~Shader() 
+{
+  Expected<void> result = DeleteProgram(program_id_);
+  if (!result) {
+    cerr << "DeleteProgram failed with error code " << result.error().value()
+         << ": " << result.error().message() << '\n';
+
+    // Nothing else to do here; just log the error.
+  }
 }
 
 auto Shader::GetProgramId() const -> unsigned int { return program_id_; }
@@ -177,6 +174,22 @@ auto Shader::Initialize(const types::ShaderSourceMap& sources)
   }
 
   program_id_ = *program_id;
+
+  for (auto shader_id : shader_ids) {
+    result = DetachShader(program_id_, shader_id);
+    if (!result) {
+      cerr << "DetachShader failed with error code: " << result.error().value()
+           << ": " << result.error().message() << '\n';
+      return unexpected(result.error());
+    }
+
+    result = DeleteShader(shader_id);
+    if (!result) {
+      cerr << "DeleteShader failed with error code: " << result.error().value()
+           << ": " << result.error().message() << '\n';
+      return unexpected(result.error());
+    }
+  }
 
   return {};
 }

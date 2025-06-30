@@ -38,8 +38,8 @@ using std::is_same_v;
 using std::to_underlying;
 using std::unexpected;
 
-static_assert(is_same_v<GLbitfield, unsigned int>,
-              "GLbitfield and unsigned int are not the same type!");
+static_assert(is_same_v<GLbitfield, unsigned>,
+              "GLbitfield and unsigned are not the same type!");
 static_assert(is_same_v<GLboolean, unsigned char>,
               "GLboolean and unsigned char are not the same type!");
 static_assert(is_same_v<GLchar, char>,
@@ -55,8 +55,8 @@ static_assert(is_same_v<GLsizeiptr, long long int>,
 static_assert(is_same_v<GLsizeiptr, long int>,
               "GLsizeiptr and long long int are not the same type!");
 #endif
-static_assert(is_same_v<GLuint, unsigned int>,
-              "GLuint and unsigned int are not the same type!");
+static_assert(is_same_v<GLuint, unsigned>,
+              "GLuint and unsigned are not the same type!");
 static_assert(is_same_v<GLvoid, void>,
               "GLvoid and void are not the same type!");
 
@@ -211,16 +211,16 @@ auto ConvertGLShaderType(GLShaderType shader_type) -> Expected<GLenum> {
 
 }  // namespace
 
-auto AttachShader(unsigned int program, unsigned int shader) -> Expected<void> {
+auto AttachShader(unsigned program, unsigned shader) -> Expected<void> {
   glAttachShader(program, shader);
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glAttachShader failed with error code " << error << '\n';
     switch (error) {
-        // LCOV_EXCL_START
+      // LCOV_EXCL_START
       default:
         assert(false);  // If we get here, add a new case to the switch.
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_VALUE:
         return unexpected(MakeErrorCode(kGLErrorInvalidValue));
       case GL_INVALID_OPERATION:
@@ -231,7 +231,7 @@ auto AttachShader(unsigned int program, unsigned int shader) -> Expected<void> {
   return {};
 }
 
-auto BindBuffer(GLBufferTarget target, unsigned int buffer) -> Expected<void> {
+auto BindBuffer(GLBufferTarget target, unsigned buffer) -> Expected<void> {
   Expected<GLenum> gl_target = ConvertGLBufferTarget(target);
   if (!gl_target) {
     cerr << "ConvertGLBufferTarget failed with error code " << gl_target.error()
@@ -243,11 +243,11 @@ auto BindBuffer(GLBufferTarget target, unsigned int buffer) -> Expected<void> {
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glBindBuffer failed with error code " << error << '\n';
     switch (error) {
+      // LCOV_EXCL_START
       default:
-        // LCOV_EXCL_START
         assert(false);  // If we get here, add a new case to the switch.
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_ENUM:
         return unexpected(MakeErrorCode(kGLErrorInvalidEnum));
       case GL_INVALID_OPERATION:
@@ -258,16 +258,16 @@ auto BindBuffer(GLBufferTarget target, unsigned int buffer) -> Expected<void> {
   return {};
 }
 
-auto BindVertexArray(unsigned int array) -> Expected<void> {
+auto BindVertexArray(unsigned array) -> Expected<void> {
   glBindVertexArray(array);
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glBindVertexArray failed with error code " << error << '\n';
     switch (error) {
-        // LCOV_EXCL_START
+      // LCOV_EXCL_START
       default:
         assert(false);  // If we get here, add a new case to the switch.
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_OPERATION:
         return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
     }
@@ -296,11 +296,11 @@ auto BufferData(GLBufferTarget target, long long int size, const void* data,
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glBufferData failed with error code " << error << '\n';
     switch (error) {
-        // LCOV_EXCL_START
+      // LCOV_EXCL_START
       default:
         assert(false);  // If we get here, add a new case to the switch.
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_ENUM:
         return unexpected(MakeErrorCode(kGLErrorInvalidEnum));
       case GL_INVALID_OPERATION:
@@ -315,7 +315,7 @@ auto BufferData(GLBufferTarget target, long long int size, const void* data,
   return {};
 }
 
-auto Clear(const IGLClearFlags& flags) -> types::Expected<void> {
+auto Clear(const IGLClearFlags& flags) -> Expected<void> {
   GLbitfield mask = 0;
   if (flags.Test(kColor)) {
     mask |= GL_COLOR_BUFFER_BIT;
@@ -330,11 +330,11 @@ auto Clear(const IGLClearFlags& flags) -> types::Expected<void> {
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glClear failed with error code " << error << '\n';
     switch (error) {
-        // LCOV_EXCL_START
+      // LCOV_EXCL_START
       default:
         assert(false);  // If we get here, add a new case to the switch.
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_VALUE:
         return unexpected(MakeErrorCode(kGLErrorInvalidValue));
     }
@@ -343,16 +343,16 @@ auto Clear(const IGLClearFlags& flags) -> types::Expected<void> {
   return {};
 }
 
-auto CompileShader(unsigned int shader) -> Expected<void> {
+auto CompileShader(unsigned shader) -> Expected<void> {
   glCompileShader(shader);
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glCompileShader failed with error code " << error << '\n';
     switch (error) {
-        // LCOV_EXCL_START
+      // LCOV_EXCL_START
       default:
         assert(false);  // If we get here, add a new case to the switch.
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_OPERATION:
         return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
       case GL_INVALID_VALUE:
@@ -363,7 +363,7 @@ auto CompileShader(unsigned int shader) -> Expected<void> {
   return {};
 }
 
-auto CreateProgram() -> Expected<unsigned int> {
+auto CreateProgram() -> Expected<unsigned> {
   GLuint program_id = glCreateProgram();
   if (program_id == 0) {
     cerr << "An error occurred creating the program object.";
@@ -373,7 +373,7 @@ auto CreateProgram() -> Expected<unsigned int> {
   return program_id;
 }
 
-auto CreateShader(GLShaderType shader_type) -> Expected<unsigned int> {
+auto CreateShader(GLShaderType shader_type) -> Expected<unsigned> {
   Expected<GLenum> gl_shader_type = ConvertGLShaderType(shader_type);
   if (!gl_shader_type) {
     cerr << "ConvertGLShaderType failed with error code "
@@ -386,11 +386,11 @@ auto CreateShader(GLShaderType shader_type) -> Expected<unsigned int> {
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glCreateShader failed with error code " << error << '\n';
     switch (error) {
-        // LCOV_EXCL_START
+      // LCOV_EXCL_START
       default:
         assert(false);  // If we get here, add a new case to the switch.
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_ENUM:
         return unexpected(MakeErrorCode(kGLErrorInvalidEnum));
     }
@@ -398,6 +398,62 @@ auto CreateShader(GLShaderType shader_type) -> Expected<unsigned int> {
 
   assert(shader > 0U);
   return shader;
+}
+
+auto DetachShader(unsigned program, unsigned shader) -> Expected<void> {
+  glDetachShader(program, shader);
+  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
+    cerr << "glDetachShader failed with error code " << error << '\n';
+    switch (error) {
+      // LCOV_EXCL_START
+      default:
+        assert(false);  // If we get here, add a new case to the switch.
+        return unexpected(MakeErrorCode(kGLError));
+      // LCOV_EXCL_STOP
+      case GL_INVALID_VALUE:
+        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
+    }
+  }
+
+  return {};
+}
+
+auto DeleteProgram(unsigned program) -> Expected<void> {
+  glDeleteProgram(program);
+  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
+    cerr << "glDeleteProgram failed with error code " << error << '\n';
+    switch (error) {
+      // LCOV_EXCL_START
+      default:
+        assert(false);  // If we get here, add a new case to the switch.
+        return unexpected(MakeErrorCode(kGLError));
+      // LCOV_EXCL_STOP
+      case GL_INVALID_OPERATION:
+        return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
+      case GL_INVALID_VALUE:
+        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
+    }
+  }
+
+  return {};
+}
+
+auto DeleteShader(unsigned shader_id) -> Expected<void> {
+  glDeleteShader(shader_id);
+  if (GLenum error = glGetError(); error != GL_NO_ERROR) {
+    cerr << "glDeleteShader failed with error code " << error << '\n';
+    switch (error) {
+      // LCOV_EXCL_START
+      default:
+        assert(false);  // If we get here, add a new case to the switch.
+        return unexpected(MakeErrorCode(kGLError));
+      // LCOV_EXCL_STOP
+      case GL_INVALID_VALUE:
+        return unexpected(MakeErrorCode(kGLErrorInvalidValue));
+    }
+  }
+
+  return {};
 }
 
 auto DrawArrays(GLDrawMode mode, int first, int count) -> Expected<void> {
@@ -412,11 +468,11 @@ auto DrawArrays(GLDrawMode mode, int first, int count) -> Expected<void> {
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glDrawArrays failed with error code " << error << '\n';
     switch (error) {
-        // LCOV_EXCL_START
+      // LCOV_EXCL_START
       default:
         assert(false);  // If we get here, add a new case to the switch.
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_ENUM:
         return unexpected(MakeErrorCode(kGLErrorInvalidEnum));
       case GL_INVALID_OPERATION:
@@ -429,17 +485,17 @@ auto DrawArrays(GLDrawMode mode, int first, int count) -> Expected<void> {
   return {};
 }
 
-auto EnableVertexAttribArray(unsigned int index) -> Expected<void> {
+auto EnableVertexAttribArray(unsigned index) -> Expected<void> {
   glEnableVertexAttribArray(index);
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glEnableVertexAttribArray failed with error code " << error
          << '\n';
     switch (error) {
-        // LCOV_EXCL_START
+      // LCOV_EXCL_START
       default:
         assert(false);  // If we get here, add a new case to the switch.
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_OPERATION:
         return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
       case GL_INVALID_VALUE:
@@ -450,16 +506,16 @@ auto EnableVertexAttribArray(unsigned int index) -> Expected<void> {
   return {};
 }
 
-auto GenBuffers(int n, unsigned int* buffers) -> Expected<void> {
+auto GenBuffers(int n, unsigned* buffers) -> Expected<void> {
   glGenBuffers(n, buffers);
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glGenBuffers failed with error code " << error << '\n';
     switch (error) {
-        // LCOV_EXCL_START
+      // LCOV_EXCL_START
       default:
         assert(false);  // If we get here, add a new case to the switch.
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_VALUE:
         return unexpected(MakeErrorCode(kGLErrorInvalidValue));
     }
@@ -468,16 +524,16 @@ auto GenBuffers(int n, unsigned int* buffers) -> Expected<void> {
   return {};
 }
 
-auto GenVertexArrays(int n, unsigned int* arrays) -> Expected<void> {
+auto GenVertexArrays(int n, unsigned* arrays) -> Expected<void> {
   glGenVertexArrays(n, arrays);
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glGenVertexArrays failed with error code " << error << '\n';
     switch (error) {
-        // LCOV_EXCL_START
+      // LCOV_EXCL_START
       default:
         assert(false);  // If we get here, add a new case to the switch.
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_VALUE:
         return unexpected(MakeErrorCode(kGLErrorInvalidValue));
     }
@@ -486,19 +542,17 @@ auto GenVertexArrays(int n, unsigned int* arrays) -> Expected<void> {
   return {};
 }
 
-DLLEXPORT [[nodiscard]] auto GetShaderInfoLog(unsigned int shader,
-                                              int max_length, int* length,
-                                              char* info_log)
-    -> types::Expected<void> {
+auto GetShaderInfoLog(unsigned shader, int max_length, int* length,
+                      char* info_log) -> Expected<void> {
   glGetShaderInfoLog(shader, max_length, length, info_log);
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glGetShaderInfoLog failed with error code " << error << '\n';
     switch (error) {
-        // LCOV_EXCL_START
+      // LCOV_EXCL_START
       default:
         assert(false);  // If we get here, add a new case to the switch.
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_VALUE:
         return unexpected(MakeErrorCode(kGLErrorInvalidValue));
       case GL_INVALID_OPERATION:
@@ -509,9 +563,8 @@ DLLEXPORT [[nodiscard]] auto GetShaderInfoLog(unsigned int shader,
   return {};
 }
 
-DLLEXPORT [[nodiscard]] auto GetShaderiv(
-    unsigned int shader, gl_types::GLShaderObjectParameter pname, int* params)
-    -> types::Expected<void> {
+auto GetShaderiv(unsigned shader, GLShaderObjectParameter pname, int* params)
+    -> Expected<void> {
   Expected<GLenum> gl_pname = ConvertGLShaderObjectParameter(pname);
   if (!gl_pname) {
     cerr << "ConvertGLShaderObjectParameter failed with error code "
@@ -523,11 +576,11 @@ DLLEXPORT [[nodiscard]] auto GetShaderiv(
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glGetShaderiv failed with error code " << error << '\n';
     switch (error) {
-        // LCOV_EXCL_START
+      // LCOV_EXCL_START
       default:
         assert(false);  // If we get here, add a new case to the switch.
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_ENUM:
         return unexpected(MakeErrorCode(kGLErrorInvalidEnum));
       case GL_INVALID_OPERATION:
@@ -540,16 +593,16 @@ DLLEXPORT [[nodiscard]] auto GetShaderiv(
   return {};
 }
 
-auto LinkProgram(unsigned int program) -> types::Expected<void> {
+auto LinkProgram(unsigned program) -> Expected<void> {
   glLinkProgram(program);
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glLinkProgram failed with error code " << error << '\n';
     switch (error) {
-        // LCOV_EXCL_START
+      // LCOV_EXCL_START
       default:
         assert(false);  // If we get here, add a new case to the switch.
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_VALUE:
         return unexpected(MakeErrorCode(kGLErrorInvalidValue));
       case GL_INVALID_OPERATION:
@@ -560,17 +613,17 @@ auto LinkProgram(unsigned int program) -> types::Expected<void> {
   return {};
 }
 
-auto ShaderSource(unsigned int shader, int count, const char** string,
+auto ShaderSource(unsigned shader, int count, const char** string,
                   const int* length) -> Expected<void> {
   glShaderSource(shader, count, string, length);
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glShaderSource failed with error code " << error << '\n';
     switch (error) {
-        // LCOV_EXCL_START
+      // LCOV_EXCL_START
       default:
         assert(false);  // If we get here, add a new case to the switch
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_VALUE:
         return unexpected(MakeErrorCode(kGLErrorInvalidValue));
       case GL_INVALID_OPERATION:
@@ -581,16 +634,16 @@ auto ShaderSource(unsigned int shader, int count, const char** string,
   return {};
 }
 
-auto UseProgram(unsigned int program) -> Expected<void> {
+auto UseProgram(unsigned program) -> Expected<void> {
   glUseProgram(program);
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glUseProgram failed with error code " << error << '\n';
     switch (error) {
-        // LCOV_EXCL_START
+      // LCOV_EXCL_START
       default:
         assert(false);  // If we get here, add a new case to the switch.
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_OPERATION:
         return unexpected(MakeErrorCode(kGLErrorInvalidOperation));
       case GL_INVALID_VALUE:
@@ -601,7 +654,7 @@ auto UseProgram(unsigned int program) -> Expected<void> {
   return {};
 }
 
-auto VertexAttribPointer(unsigned int index, int size, GLDataType type,
+auto VertexAttribPointer(unsigned index, int size, GLDataType type,
                          unsigned char normalized, int stride,
                          const void* pointer) -> Expected<void> {
   Expected<GLenum> gl_type = ConvertGLDataType(type);
@@ -615,11 +668,11 @@ auto VertexAttribPointer(unsigned int index, int size, GLDataType type,
   if (GLenum error = glGetError(); error != GL_NO_ERROR) {
     cerr << "glVertexAttribPointer failed with error code " << error << '\n';
     switch (error) {
-        // LCOV_EXCL_START
+      // LCOV_EXCL_START
       default:
         assert(false);  // If we get here, add a new case to the switch.
         return unexpected(MakeErrorCode(kGLError));
-        // LCOV_EXCL_STOP
+      // LCOV_EXCL_STOP
       case GL_INVALID_ENUM:
         return unexpected(MakeErrorCode(kGLErrorInvalidEnum));
       case GL_INVALID_OPERATION:
